@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AEO/GEO Semantic Architecture Guide",
+  title: "AEO / GEO & Semantic Architecture Optimization Guide",
   description: "AEO/GEO optimization guide with on-page RAG assistant",
 };
 
