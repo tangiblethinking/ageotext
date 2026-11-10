@@ -22,12 +22,30 @@ type Message = {
 
 type PanelMode = "closed" | "default" | "expanded";
 
+const STORAGE_KEY = "gemini_api_key";
+
 export default function ChatFAB() {
   const [mode, setMode] = useState<PanelMode>("closed");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [hasKey, setHasKey] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+
+  const refreshKey = () => {
+    setHasKey(!!localStorage.getItem(STORAGE_KEY));
+  };
+
+  useEffect(() => {
+    refreshKey();
+    const onChange = () => refreshKey();
+    window.addEventListener("gemini-key-changed", onChange);
+    window.addEventListener("storage", onChange);
+    return () => {
+      window.removeEventListener("gemini-key-changed", onChange);
+      window.removeEventListener("storage", onChange);
+    };
+  }, []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -35,7 +53,10 @@ export default function ChatFAB() {
 
   const send = async () => {
     const text = input.trim();
-    if (!text || thinking) return;
+    if (!text || thinking || !hasKey) return;
+    const apiKey = localStorage.getItem(STORAGE_KEY);
+    if (!apiKey) return;
+
     setInput("");
     setMessages((m) => [...m, { role: "user", content: text }]);
     setThinking(true);
@@ -43,7 +64,7 @@ export default function ChatFAB() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, apiKey }),
       });
       const data = await res.json();
       setMessages((m) => [
@@ -126,7 +147,12 @@ export default function ChatFAB() {
       </Box>
 
       <Box sx={{ flex: 1, overflowY: "auto", p: 2, bgcolor: "#F2F2F7" }}>
-        {messages.length === 0 && (
+        {!hasKey && (
+          <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 4 }}>
+            A Gemini API key is required. Open the API Key button in the top bar to save one.
+          </Typography>
+        )}
+        {hasKey && messages.length === 0 && (
           <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 4 }}>
             Ask about heading hierarchy, span resolution, PLP/PDP structures, or typography tokens.
           </Typography>
@@ -201,12 +227,13 @@ export default function ChatFAB() {
                 send();
               }
             }}
-            placeholder="Ask about AEO/GEO..."
+            placeholder={hasKey ? "Ask about AEO/GEO..." : "Set an API key first"}
             size="small"
+            disabled={!hasKey}
           />
           <IconButton
             onClick={send}
-            disabled={thinking || !input.trim()}
+            disabled={thinking || !input.trim() || !hasKey}
             sx={{ bgcolor: "#007AFF", color: "#fff", "&:hover": { bgcolor: "#0051D5" }, alignSelf: "flex-end" }}
             aria-label="Send"
           >
