@@ -3,25 +3,61 @@ import { GoogleGenAI } from "@google/genai";
 import { geminiKeys } from "@/lib/keys";
 import { retrieveRelevantChunks } from "@/lib/content";
 
-const MODEL_PREFERENCE = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+const MODEL_PREFERENCE = [
+  "gemini-3.5-flash",
+  "gemini-3.8-flash",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+];
 const limitedModels = new Map<string, number>();
 const limitedKeys = new Map<string, number>();
 
 function isLimited(id: string, map: Map<string, number>): boolean {
   const until = map.get(id);
   if (!until) return false;
-  if (Date.now() > until) { map.delete(id); return false; }
+  if (Date.now() > until) {
+    map.delete(id);
+    return false;
+  }
   return true;
 }
 function markLimited(id: string, map: Map<string, number>, durationMs = 60000) {
   map.set(id, Date.now() + durationMs);
 }
 function getHealthyKey() {
-  // Accept any key whose secret is a non-empty string longer than 10 chars
-  return geminiKeys.find((k) => typeof k.secret === "string" && k.secret.trim().length > 10 && !isLimited(k.id, limitedKeys));
+  return geminiKeys.find(
+    (k) => typeof k.secret === "string" && k.secret.trim().length > 10 && !isLimited(k.id, limitedKeys)
+  );
 }
 function getHealthyModel() {
   return MODEL_PREFERENCE.find((m) => !isLimited(m, limitedModels)) || MODEL_PREFERENCE[0];
+}
+
+async function callDirect(key: string, model: string, prompt: string, systemInstruction: string) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": key,
+    },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      systemInstruction: { parts: [{ text: systemInstruction }] },
+      generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err: any = new Error(data?.error?.message || `HTTP ${res.status}`);
+    err.status = res.status;
+    err.raw = data;
+    throw err;
+  }
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return text;
 }
 
 export async function POST(req: NextRequest) {
@@ -31,19 +67,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Message required" }, { status: 400 });
     }
 
-    const key = getHealthyKey();
-    if (!key) {
-      const debug = {
-        keysLoaded: geminiKeys.length,
-        secrets: geminiKeys.map((k) => ({
-          id: k.id,
-          secretLength: (k.secret || "").length,
-          secretPrefix: (k.secret || "").slice(0, 4),
-        })),
-      };
+    const keyObj = getHealthyKey();
+    if (!keyObj) {
       return NextResponse.json({
         error: "No usable API key found on the server.",
-        debug,
+        debug: { keysLoaded: geminiKeys.length },
       }, { status: 503 });
     }
 
@@ -53,29 +81,53 @@ export async function POST(req: NextRequest) {
     const prompt = `Context:\n${context}\n\nUser: ${message}`;
 
     let lastError = "";
-    for (let attempt = 0; attempt < 3; attempt++) {
+    for (let attempt = 0; attempt < 4; attempt++) {
       const model = getHealthyModel();
       try {
-        const ai = new GoogleGenAI({ apiKey: key.secret });
+        // Try SDK first
+        const ai = new GoogleGenAI({ apiKey: keyObj.secret });
         const response = await ai.models.generateContent({
           model,
           contents: prompt,
           config: { systemInstruction, temperature: 0.3, maxOutputTokens: 1024 },
         });
-        return NextResponse.json({
-          answer: response.text || "No response.",
-          sources: chunks.map((c) => ({ heading: c.heading, section: c.section })),
-          modelUsed: model,
-          keyUsed: key.id,
-        });
+        const text = response.text || "";
+        if (text) {
+          return NextResponse.json({
+            answer: text,
+            sources: chunks.map((c) => ({ heading: c.heading, section: c.section })),
+            modelUsed: model,
+            keyUsed: keyObj.id,
+            method: "sdk",
+          });
+        }
       } catch (err: any) {
         lastError = err?.message || String(err);
+        // On auth error, try direct fetch as fallback
+        if (lastError.toLowerCase().includes("api key") || err?.status === 401 || err?.status === 400) {
+          try {
+            const text = await callDirect(keyObj.secret, model, prompt, systemInstruction);
+            if (text) {
+              return NextResponse.json({
+                answer: text,
+                sources: chunks.map((c) => ({ heading: c.heading, section: c.section })),
+                modelUsed: model,
+                keyUsed: keyObj.id,
+                method: "direct",
+              });
+            }
+          } catch (directErr: any) {
+            lastError = directErr?.message || String(directErr);
+          }
+        }
         if (err?.status === 429 || lastError.toLowerCase().includes("rate") || lastError.toLowerCase().includes("quota")) {
           markLimited(model, limitedModels, 90000);
-          markLimited(key.id, limitedKeys, 60000);
+          markLimited(keyObj.id, limitedKeys, 60000);
           continue;
         }
-        break;
+        // Try next model on any error
+        markLimited(model, limitedModels, 30000);
+        continue;
       }
     }
     return NextResponse.json({ error: "Unable to respond. " + lastError }, { status: 503 });
