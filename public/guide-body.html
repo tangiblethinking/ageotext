@@ -3,18 +3,18 @@
   <span class="section-eyebrow text-overline">Foundation</span>
   <h2 class="text-h2">1. Understanding AEO/GEO & Semantic Architecture</h2>
   <ul>
-    <li class="text-body"><strong>Structural Hierarchy Over Visual Styling:</strong> AI search engines parse web pages based entirely on structural DOM hierarchy (<code><h1></code> through <code><h6></code>). They ignore CSS visual sizing.</li>
+    <li class="text-body"><strong>Structural Hierarchy Over Visual Styling:</strong> AI search engines parse web pages based entirely on structural DOM hierarchy (<code><h1></code> through <code><h6></code>). They ignore CSS visual sizing (px, rem).</li>
   </ul>
   <div class="meaning text-body"><span class="label text-overline">MEANING</span> Visual styling does not need to be changed; the technical tag must adhere to the rules.</div>
   <ul>
-    <li class="text-body"><strong>The span Resolution:</strong> Use <code><span class="text-h4"></code> when a lower visual style is needed before a larger heading to preserve linear hierarchy.</li>
+    <li class="text-body"><strong>The span Resolution for Non-Optimal Sizing:</strong> When a lower-size visual style must appear before a larger heading, use <code><span class="text-h4"></code> instead of a real heading tag.</li>
   </ul>
   <div class="meaning text-body"><span class="label text-overline">RESOLUTION</span> Preserves AEO/GEO optimization without disrupting designer intent.</div>
   <ul>
     <li class="text-body"><strong>Distinct Semantic Maps:</strong> PLPs, PDPs, and Editorial pages require tailored structures. Prioritize Homepage, PDP, PLP.</li>
   </ul>
   <ul>
-    <li class="text-body"><strong>Core Optimization Rule:</strong> Maintain strict linear hierarchy. Never skip levels.</li>
+    <li class="text-body"><strong>Core Optimization Rule:</strong> Maintain strict linear hierarchy. Never skip levels. Visual size does not have to descend with tag rank.</li>
   </ul>
   <ul>
     <li class="text-body"><strong>Heading-to-Paragraph RAG Pairing:</strong> Every heading followed by a 40–60 word answer block, list, or table.</li>
@@ -22,36 +22,37 @@
   <span class="section-eyebrow text-overline">Design System Token Mapping</span>
   <h2 class="text-h2">2. Typography Tokens & Strategic Roles</h2>
   <p class="text-subtitle">Complete mapping of all existing typography design tokens.</p>
-  <div class="token-card"><div class="token-header"><span class="token-tag">.text-h1</span><strong>Heading 1 (Display / Hero)</strong></div><p class="text-body"><code>Spectral | 32px/32px | 400</code></p><p class="text-caption"><strong>Semantic Role (h1 - Entity Scope):</strong> Exactly one per page.</p></div>
-  <div class="token-card"><div class="token-header"><span class="token-tag">.text-h2</span><strong>Heading 2</strong></div><p class="text-body"><code>DM Sans | 28px/28px | 600</code></p><p class="text-caption"><strong>Semantic Role (h2 - Primary Query Trigger):</strong> Most critical for AEO extraction.</p></div>
-  <div class="token-card"><div class="token-header"><span class="token-tag">.text-h3</span><strong>Heading 3</strong></div><p class="text-body"><code>DM Sans | 24px/28px | 300</code></p><p class="text-caption"><strong>Semantic Role (h3 - Entity Chunk):</strong> Sub-topics under h2.</p></div>
+  <div class="token-card"><div class="token-header"><span class="token-tag">.text-h1</span><strong>Heading 1 (Display / Hero)</strong></div><p class="text-body"><code>Spectral | 32px/32px | 400</code></p><p class="text-caption"><strong>Semantic Role (h1):</strong> Exactly one per page.</p></div>
+  <div class="token-card"><div class="token-header"><span class="token-tag">.text-h2</span><strong>Heading 2</strong></div><p class="text-body"><code>DM Sans | 28px/28px | 600</code></p><p class="text-caption"><strong>Semantic Role (h2):</strong> Primary query trigger for AEO extraction.</p></div>
+  <div class="token-card"><div class="token-header"><span class="token-tag">.text-h3</span><strong>Heading 3</strong></div><p class="text-body"><code>DM Sans | 24px/28px | 300</code></p><p class="text-caption"><strong>Semantic Role (h3):</strong> Entity chunk level under h2.</p></div>
   <div class="token-card"><div class="token-header"><span class="token-tag">.text-subheading</span><strong>Subheading</strong></div><p class="text-body"><code>DM Sans | 24px/28px | 600</code></p><p class="text-caption">Non-heading span for visual emphasis.</p></div>
   <div class="token-card"><div class="token-header"><span class="token-tag">.text-h4</span><strong>Heading 4</strong></div><p class="text-body"><code>DM Sans | 16px/20px | 600</code></p><p class="text-caption">Detail level or span before h1.</p></div>
   <div class="token-card"><div class="token-header"><span class="token-tag">.text-overline</span><strong>Overline / Eyebrow</strong></div><p class="text-body"><code>DM Sans | 12px | 800 | UPPERCASE</code></p><p class="text-caption">Always a span. Never a real heading.</p></div>
+  <div class="token-card"><div class="token-header"><span class="token-tag">.text-body</span><strong>Body Paragraph</strong></div><p class="text-body"><code>DM Sans | 16px/20px | 300</code></p><p class="text-caption">RAG payload layer. 40–60 word answer blocks.</p></div>
   <span class="section-eyebrow text-overline">Implementation</span>
   <h2 class="text-h2">3. Page-Specific Semantic Structures</h2>
   <h3 class="text-subheading">A. The Product Listing Page (PLP) Structure</h3>
   <p class="text-subtitle">Establishes catalog breadth and category domain authority.</p>
   <ul>
-    <li class="text-body"><strong>h1:</strong> Category Name only. Exactly one per page.</li>
-    <li class="text-body"><strong>h2:</strong> Semantic Filters, Catalog Subsections, or Category FAQs.</li>
-    <li class="text-body"><strong>h3:</strong> Curated sub-categories under an h2.</li>
-    <li class="text-body"><strong>Grid Items:</strong> Use anchor or div + span.text-h4. Pair with ItemList JSON-LD. Do not repeat h3 tags.</li>
+    <li class="text-body"><strong>h1:</strong> Category Name only. Exactly one per page. Example: Gut Health Supplements.</li>
+    <li class="text-body"><strong>h2:</strong> Semantic Filters, Catalog Subsections, or Category FAQs. Example: Shop Gut Health by Health Goal.</li>
+    <li class="text-body"><strong>h3:</strong> Curated sub-categories under an h2. Example: Microbiome Activating Formulations.</li>
+    <li class="text-body"><strong>Grid Items:</strong> Use a or div + span.text-h4. Pair with ItemList JSON-LD. Do not repeat h3 tags.</li>
   </ul>
   <h3 class="text-subheading">B. The Product Detail Page (PDP) Structure</h3>
   <p class="text-subtitle">Feeds AI engines product specs, ingredients, clinical proof, and purchase intent.</p>
   <ul>
-    <li class="text-body"><strong>h1:</strong> Full exact product title.</li>
-    <li class="text-body"><strong>h2:</strong> Major blocks (Ingredients, How to Take, Clinical Results) as high-intent queries.</li>
-    <li class="text-body"><strong>h3:</strong> Sub-attributes under h2.</li>
+    <li class="text-body"><strong>h1:</strong> Full exact product title. Example: Plexus Slim Microbiome Activating - Pink Drink.</li>
+    <li class="text-body"><strong>h2:</strong> Major blocks as high-intent queries (Ingredients and Supplement Facts, How to Take, Clinical Results and Reviews).</li>
+    <li class="text-body"><strong>h3:</strong> Sub-attributes under h2. Example: Prebiotic Fiber and Chromium Benefits.</li>
     <li class="text-body"><strong>h4–h6:</strong> Technical certifications and deep specs.</li>
     <li class="text-body"><strong>Disclaimers:</strong> Non-heading markup only.</li>
   </ul>
-  <h3 class="text-subheading">C. Copy-Heavy Landing Pages & Editorial Content</h3>
+  <h3 class="text-subheading">C. Copy-Heavy Landing Pages and Editorial Content</h3>
   <p class="text-subtitle">Maps user problems to commercial solutions. Primary source for GEO citations.</p>
   <ul>
-    <li class="text-body"><strong>h1:</strong> Editorial title with target entity.</li>
-    <li class="text-body"><strong>h2:</strong> Conversational questions immediately followed by a p.text-body answer block.</li>
+    <li class="text-body"><strong>h1:</strong> Editorial title with target entity. Example: The Ultimate Guide to Restoring Your Gut Microbiome Naturally.</li>
+    <li class="text-body"><strong>h2:</strong> Conversational questions immediately followed by a p.text-body answer block. Example: What are the best targeted supplements to reduce bloating?</li>
     <li class="text-body"><strong>h3:</strong> Recommended products or sub-steps.</li>
     <li class="text-body"><strong>h4:</strong> Active ingredients or clinical callouts.</li>
   </ul>
@@ -64,11 +65,11 @@
       <tr><td class="text-body"><strong>Grid Item Names</strong></td><td class="text-body">Repeating h3</td><td class="text-body">a/div + span.text-h4 + ItemList schema</td><td class="text-caption">Avoids fragmenting DOM trees</td></tr>
       <tr><td class="text-body"><strong>Price / Add to Cart</strong></td><td class="text-body">Heading tags</td><td class="text-body">Non-heading only</td><td class="text-caption">Keeps transactional text out of graphs</td></tr>
       <tr><td class="text-body"><strong>Out-of-Order Visuals</strong></td><td class="text-body">h4 before h1</td><td class="text-body">span with text-h4 or overline</td><td class="text-caption">Preserves linear hierarchy</td></tr>
-      <tr><td class="text-body"><strong>Sidebar & Footers</strong></td><td class="text-body">h3/h4</td><td class="text-body">Stripped of H-tags; CSS spans only</td><td class="text-caption">Removes non-entity content</td></tr>
+      <tr><td class="text-body"><strong>Sidebar and Footers</strong></td><td class="text-body">h3/h4</td><td class="text-body">Stripped of H-tags; CSS spans only</td><td class="text-caption">Removes non-entity content</td></tr>
       <tr><td class="text-body"><strong>Disclaimers</strong></td><td class="text-body">h4</td><td class="text-body">p.text-caption or div</td><td class="text-caption">Keeps legal text out of topic map</td></tr>
     </tbody>
   </table>
-  <span class="section-eyebrow text-overline">Consensus & Authority</span>
+  <span class="section-eyebrow text-overline">Consensus and Authority</span>
   <h2 class="text-h2">5. Off-Page Entity Consensus (The GEO Authority Layer)</h2>
   <p class="text-subtitle">On-page HTML hierarchy structures content for crawlers, but LLMs validate citations through cross-source entity consensus.</p>
   <ol>
