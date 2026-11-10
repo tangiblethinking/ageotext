@@ -119,11 +119,11 @@ const STEPS: Record<Step, { text: string; buttons?: { label: string; next: Step 
 };
 
 type Props = {
-  apiKey: string;
-  onApiKeyChange: (key: string) => void;
+  apiKey?: string;
+  onApiKeyChange?: (key: string) => void;
 };
 
-export default function SupportBot({ apiKey: propApiKey, onApiKeyChange }: Props) {
+export default function SupportBot({ apiKey: propApiKey = "", onApiKeyChange = () => {} }: Props) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("welcome");
   const [messages, setMessages] = useState<Message[]>([]);

@@ -8,7 +8,7 @@ export default function Home() {
     <>
       <NavBar />
       <GuideContent />
-      <SupportBot apiKey="" onApiKeyChange={() => {}} />
+      <SupportBot />
       <ChatFAB />
     </>
   );
