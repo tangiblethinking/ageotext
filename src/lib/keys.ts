@@ -14,7 +14,7 @@ export interface GeminiKey {
 export const geminiKeys: GeminiKey[] = [
   {
     id: "key-1",
-    secret: "AQ.Ab8RN6Kn0lniXupii8yD6RutEFV7OYAN7FW6mYEPZTkXXSbkkg",
+    secret: "AQ.Ab8RN6J9yR7oo9rGW_XmepC7i5PlbnH_tfHQ8dcJ1eyxBPhaIw",
     notes: "Primary key",
   },
   // Duplicate the object above to add more keys:
