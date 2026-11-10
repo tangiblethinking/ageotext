@@ -9,7 +9,6 @@ const MODEL_PREFERENCE = [
   "gemini-2.5-flash",
   "gemini-2.5-flash-lite",
   "gemini-2.0-flash",
-  "gemini-1.5-flash",
 ];
 const limitedModels = new Map<string, number>();
 const limitedKeys = new Map<string, number>();
@@ -17,25 +16,47 @@ const limitedKeys = new Map<string, number>();
 function isLimited(id: string, map: Map<string, number>): boolean {
   const until = map.get(id);
   if (!until) return false;
-  if (Date.now() > until) {
-    map.delete(id);
-    return false;
-  }
+  if (Date.now() > until) { map.delete(id); return false; }
   return true;
 }
 function markLimited(id: string, map: Map<string, number>, durationMs = 60000) {
   map.set(id, Date.now() + durationMs);
 }
 function getHealthyKey() {
-  return geminiKeys.find(
-    (k) => typeof k.secret === "string" && k.secret.trim().length > 10 && !isLimited(k.id, limitedKeys)
-  );
+  return geminiKeys.find((k) => typeof k.secret === "string" && k.secret.trim().length > 10 && !isLimited(k.id, limitedKeys));
 }
 function getHealthyModel() {
   return MODEL_PREFERENCE.find((m) => !isLimited(m, limitedModels)) || MODEL_PREFERENCE[0];
 }
 
-async function callDirect(key: string, model: string, prompt: string, systemInstruction: string) {
+async function callOpenAICompat(key: string, model: string, prompt: string, systemInstruction: string) {
+  const url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${key}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: systemInstruction },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.3,
+      max_tokens: 1024,
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const err: any = new Error(data?.error?.message || `HTTP ${res.status}`);
+    err.status = res.status;
+    throw err;
+  }
+  return data?.choices?.[0]?.message?.content || "";
+}
+
+async function callNative(key: string, model: string, prompt: string, systemInstruction: string) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
   const res = await fetch(url, {
     method: "POST",
@@ -53,11 +74,9 @@ async function callDirect(key: string, model: string, prompt: string, systemInst
   if (!res.ok) {
     const err: any = new Error(data?.error?.message || `HTTP ${res.status}`);
     err.status = res.status;
-    err.raw = data;
     throw err;
   }
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-  return text;
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 }
 
 export async function POST(req: NextRequest) {
@@ -69,10 +88,7 @@ export async function POST(req: NextRequest) {
 
     const keyObj = getHealthyKey();
     if (!keyObj) {
-      return NextResponse.json({
-        error: "No usable API key found on the server.",
-        debug: { keysLoaded: geminiKeys.length },
-      }, { status: 503 });
+      return NextResponse.json({ error: "No usable API key found on the server.", debug: { keysLoaded: geminiKeys.length } }, { status: 503 });
     }
 
     const chunks = retrieveRelevantChunks(message, 6);
@@ -81,52 +97,42 @@ export async function POST(req: NextRequest) {
     const prompt = `Context:\n${context}\n\nUser: ${message}`;
 
     let lastError = "";
-    for (let attempt = 0; attempt < 4; attempt++) {
+    const methods = ["openai", "native", "sdk"];
+    for (let attempt = 0; attempt < 6; attempt++) {
       const model = getHealthyModel();
+      const method = methods[attempt % methods.length];
       try {
-        // Try SDK first
-        const ai = new GoogleGenAI({ apiKey: keyObj.secret });
-        const response = await ai.models.generateContent({
-          model,
-          contents: prompt,
-          config: { systemInstruction, temperature: 0.3, maxOutputTokens: 1024 },
-        });
-        const text = response.text || "";
+        let text = "";
+        if (method === "openai") {
+          text = await callOpenAICompat(keyObj.secret, model, prompt, systemInstruction);
+        } else if (method === "native") {
+          text = await callNative(keyObj.secret, model, prompt, systemInstruction);
+        } else {
+          const ai = new GoogleGenAI({ apiKey: keyObj.secret });
+          const response = await ai.models.generateContent({
+            model,
+            contents: prompt,
+            config: { systemInstruction, temperature: 0.3, maxOutputTokens: 1024 },
+          });
+          text = response.text || "";
+        }
         if (text) {
           return NextResponse.json({
             answer: text,
             sources: chunks.map((c) => ({ heading: c.heading, section: c.section })),
             modelUsed: model,
             keyUsed: keyObj.id,
-            method: "sdk",
+            method,
           });
         }
       } catch (err: any) {
         lastError = err?.message || String(err);
-        // On auth error, try direct fetch as fallback
-        if (lastError.toLowerCase().includes("api key") || err?.status === 401 || err?.status === 400) {
-          try {
-            const text = await callDirect(keyObj.secret, model, prompt, systemInstruction);
-            if (text) {
-              return NextResponse.json({
-                answer: text,
-                sources: chunks.map((c) => ({ heading: c.heading, section: c.section })),
-                modelUsed: model,
-                keyUsed: keyObj.id,
-                method: "direct",
-              });
-            }
-          } catch (directErr: any) {
-            lastError = directErr?.message || String(directErr);
-          }
-        }
         if (err?.status === 429 || lastError.toLowerCase().includes("rate") || lastError.toLowerCase().includes("quota")) {
           markLimited(model, limitedModels, 90000);
           markLimited(keyObj.id, limitedKeys, 60000);
-          continue;
+        } else {
+          markLimited(model, limitedModels, 20000);
         }
-        // Try next model on any error
-        markLimited(model, limitedModels, 30000);
         continue;
       }
     }
