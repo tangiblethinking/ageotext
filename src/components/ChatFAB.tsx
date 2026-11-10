@@ -1,8 +1,25 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Fab from "@mui/material/Fab";
+import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import CloseIcon from "@mui/icons-material/Close";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import SendIcon from "@mui/icons-material/Send";
 
-type Message = { role: "user" | "assistant"; content: string; sources?: { heading: string; section: string }[] };
+type Message = {
+  role: "user" | "assistant";
+  content: string;
+  sources?: { heading: string; section: string }[];
+};
+
 type PanelMode = "closed" | "default" | "expanded";
 
 export default function ChatFAB() {
@@ -12,7 +29,9 @@ export default function ChatFAB() {
   const [thinking, setThinking] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, thinking]);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, thinking]);
 
   const send = async () => {
     const text = input.trim();
@@ -21,67 +40,187 @@ export default function ChatFAB() {
     setMessages((m) => [...m, { role: "user", content: text }]);
     setThinking(true);
     try {
-      const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: text }) });
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
       const data = await res.json();
-      setMessages((m) => [...m, { role: "assistant", content: data.answer || data.error || "Error", sources: data.sources }]);
+      setMessages((m) => [
+        ...m,
+        {
+          role: "assistant",
+          content: data.answer || data.error || "Unable to respond.",
+          sources: data.sources,
+        },
+      ]);
     } catch {
-      setMessages((m) => [...m, { role: "assistant", content: "Network error." }]);
-    } finally { setThinking(false); }
+      setMessages((m) => [...m, { role: "assistant", content: "Network error. Please try again." }]);
+    } finally {
+      setThinking(false);
+    }
   };
 
-  const copy = (text: string, btn: HTMLButtonElement) => {
+  const copyText = (text: string) => {
     navigator.clipboard.writeText(text);
-    const orig = btn.textContent;
-    btn.textContent = "Copied";
-    setTimeout(() => { btn.textContent = orig; }, 1200);
   };
 
   if (mode === "closed") {
     return (
-      <button onClick={() => setMode("default")} className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg flex items-center justify-center text-2xl hover:bg-blue-700" aria-label="Open assistant">💬</button>
+      <Fab
+        onClick={() => setMode("default")}
+        sx={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          zIndex: 1300,
+          bgcolor: "#007AFF",
+          color: "#fff",
+          "&:hover": { bgcolor: "#0051D5" },
+        }}
+        aria-label="Open AEO/GEO assistant"
+      >
+        <ChatBubbleOutlineIcon />
+      </Fab>
     );
   }
 
-  const height = mode === "expanded" ? "h-screen" : "h-[70vh]";
+  const isExpanded = mode === "expanded";
 
   return (
-    <div className={`fixed bottom-0 right-0 z-50 w-full sm:w-96 ${height} bg-white border border-slate-200 shadow-2xl flex flex-col rounded-t-xl sm:rounded-xl sm:bottom-6 sm:right-6 overflow-hidden`}>
-      <div className="flex items-center justify-between px-4 py-3 border-b bg-slate-50">
-        <span className="font-semibold text-sm text-slate-800">AEO/GEO Assistant</span>
-        <div className="flex gap-1">
-          {mode === "default" && <button onClick={() => setMode("expanded")} className="p-1 text-slate-500" title="Expand">⛶</button>}
-          {mode === "expanded" && <button onClick={() => setMode("default")} className="p-1 text-slate-500" title="Restore">⧉</button>}
-          <button onClick={() => setMode("closed")} className="p-1 text-slate-500" title="Minimize">✕</button>
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
-        {messages.length === 0 && <p className="text-sm text-slate-500 text-center py-8">Ask about heading hierarchy, spans, PLP/PDP, or tokens.</p>}
+    <Paper
+      elevation={8}
+      sx={{
+        position: "fixed",
+        bottom: isExpanded ? 0 : 24,
+        right: isExpanded ? 0 : 24,
+        zIndex: 1300,
+        width: isExpanded ? "100vw" : { xs: "100vw", sm: 400 },
+        height: isExpanded ? "100vh" : "70vh",
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: isExpanded ? 0 : 3,
+        overflow: "hidden",
+        bgcolor: "#FFFFFF",
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 2, py: 1.5, borderBottom: "1px solid rgba(60,60,67,0.12)", bgcolor: "#F2F2F7" }}>
+        <Typography variant="subtitle1" fontWeight={600}>
+          AEO/GEO Guide Assistant
+        </Typography>
+        <Box>
+          {mode === "default" && (
+            <IconButton size="small" onClick={() => setMode("expanded")} aria-label="Expand">
+              <FullscreenIcon fontSize="small" />
+            </IconButton>
+          )}
+          {mode === "expanded" && (
+            <IconButton size="small" onClick={() => setMode("default")} aria-label="Restore">
+              <FullscreenExitIcon fontSize="small" />
+            </IconButton>
+          )}
+          <IconButton size="small" onClick={() => setMode("closed")} aria-label="Minimize">
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      </Box>
+
+      <Box sx={{ flex: 1, overflowY: "auto", p: 2, bgcolor: "#F2F2F7" }}>
+        {messages.length === 0 && (
+          <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 4 }}>
+            Ask about heading hierarchy, span resolution, PLP/PDP structures, or typography tokens.
+          </Typography>
+        )}
         {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`relative max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words ${msg.role === "user" ? "bg-blue-600 text-white" : "bg-white border text-slate-800"}`}>
+          <Box key={i} sx={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start", mb: 1.5 }}>
+            <Paper
+              elevation={0}
+              sx={{
+                maxWidth: "85%",
+                p: 1.5,
+                borderRadius: 2,
+                bgcolor: msg.role === "user" ? "#007AFF" : "#FFFFFF",
+                color: msg.role === "user" ? "#FFFFFF" : "#000000",
+                position: "relative",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+              }}
+            >
               {msg.role === "assistant" && (
-                <button onClick={(e) => copy(msg.content, e.currentTarget)} className="absolute -top-1 -right-1 w-6 h-6 bg-slate-100 border rounded-full text-xs" title="Copy">📋</button>
+                <IconButton
+                  size="small"
+                  onClick={() => copyText(msg.content)}
+                  sx={{ position: "sticky", top: 4, float: "right", ml: 1, bgcolor: "rgba(0,0,0,0.05)" }}
+                  aria-label="Copy response"
+                >
+                  <ContentCopyIcon fontSize="small" />
+                </IconButton>
               )}
-              {msg.content}
-              {msg.sources && <div className="mt-1 text-xs text-slate-500">Sources: {msg.sources.map(s => s.heading).join(", ")}</div>}
-            </div>
-          </div>
+              <Typography variant="body2" component="div">{msg.content}</Typography>
+              {msg.sources && msg.sources.length > 0 && (
+                <Typography variant="caption" sx={{ display: "block", mt: 1, opacity: 0.7 }}>
+                  Sources: {msg.sources.map((s) => s.heading).join(" · ")}
+                </Typography>
+              )}
+            </Paper>
+          </Box>
         ))}
         {thinking && (
-          <div className="flex justify-start">
-            <div className="bg-white border rounded-2xl px-3 py-2 flex gap-1">
-              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" /><span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay:"0.15s"}} /><span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay:"0.3s"}} />
-            </div>
-          </div>
+          <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 1.5 }}>
+            <Paper elevation={0} sx={{ p: 1.5, borderRadius: 2, bgcolor: "#FFFFFF", display: "flex", gap: 0.5 }}>
+              {[0, 0.16, 0.32].map((delay) => (
+                <Box
+                  key={delay}
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    bgcolor: "#8E8E93",
+                    animation: "bounce 1.4s infinite ease-in-out both",
+                    animationDelay: `${delay}s`,
+                  }}
+                />
+              ))}
+            </Paper>
+          </Box>
         )}
         <div ref={endRef} />
-      </div>
-      <div className="p-3 border-t bg-white">
-        <div className="flex gap-2">
-          <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder="Ask about AEO/GEO..." className="flex-1 resize-none rounded-xl border px-3 py-2 text-sm min-h-[40px] max-h-28" rows={1} />
-          <button onClick={send} disabled={thinking || !input.trim()} className="self-end px-3 py-2 bg-blue-600 text-white rounded-xl text-sm disabled:opacity-50">Send</button>
-        </div>
-      </div>
-    </div>
+      </Box>
+
+      <Box sx={{ p: 1.5, borderTop: "1px solid rgba(60,60,67,0.12)", bgcolor: "#FFFFFF" }}>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <TextField
+            fullWidth
+            multiline
+            maxRows={4}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send();
+              }
+            }}
+            placeholder="Ask about AEO/GEO..."
+            size="small"
+          />
+          <IconButton
+            onClick={send}
+            disabled={thinking || !input.trim()}
+            sx={{ bgcolor: "#007AFF", color: "#fff", "&:hover": { bgcolor: "#0051D5" }, alignSelf: "flex-end" }}
+            aria-label="Send"
+          >
+            <SendIcon />
+          </IconButton>
+        </Box>
+      </Box>
+
+      <style>{`
+        @keyframes bounce {
+          0%, 80%, 100% { transform: scale(0); }
+          40% { transform: scale(1); }
+        }
+      `}</style>
+    </Paper>
   );
 }
