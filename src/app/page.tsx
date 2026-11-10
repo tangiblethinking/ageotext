@@ -11,7 +11,7 @@ export default function Home() {
           <h2 className="text-2xl font-semibold tracking-tight text-slate-800 border-b border-slate-200 pb-2 mb-4">1. Understanding AEO/GEO & Semantic Architecture</h2>
           <ul className="space-y-3 mb-6 list-disc pl-5 text-sm">
             <li><strong>Structural Hierarchy Over Visual Styling:</strong> AI engines parse DOM hierarchy (h1–h6), not CSS size. Use correct tags or spans.</li>
-            <li><strong>Span Resolution:</strong> For out-of-order visual styles, use <span class="text-h4"> instead of a real heading to keep linear hierarchy.</li>
+            <li><strong>Span Resolution:</strong> For out-of-order visual styles, use <code><span class="text-h4"></code> instead of a real heading to keep linear hierarchy.</li>
             <li><strong>Core Rule:</strong> Never skip levels. Visual size does not have to match tag rank.</li>
             <li><strong>RAG Pairing:</strong> Every heading should be followed by a 40–60 word answer block, list, or table.</li>
           </ul>
@@ -19,7 +19,7 @@ export default function Home() {
           <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-blue-600 block mb-1 mt-8">Typography Tokens</span>
           <h2 className="text-2xl font-semibold tracking-tight text-slate-800 border-b border-slate-200 pb-2 mb-4">2. Tokens & Strategic Roles</h2>
           <div className="space-y-2 text-sm">
-            <div className="bg-slate-50 border rounded-lg p-3"><code className="text-xs bg-slate-200 px-1 rounded">.text-h1</code> — Exactly one <h1> per page. Entity scope.</div>
+            <div className="bg-slate-50 border rounded-lg p-3"><code className="text-xs bg-slate-200 px-1 rounded">.text-h1</code> — Exactly one <code><h1></code> per page. Entity scope.</div>
             <div className="bg-slate-50 border rounded-lg p-3"><code className="text-xs bg-slate-200 px-1 rounded">.text-h2</code> — Primary query trigger. Conversational questions.</div>
             <div className="bg-slate-50 border rounded-lg p-3"><code className="text-xs bg-slate-200 px-1 rounded">.text-h3</code> — Entity chunks under H2.</div>
             <div className="bg-slate-50 border rounded-lg p-3"><code className="text-xs bg-slate-200 px-1 rounded">.text-h4 / span</code> — Detail level or visual span before H1.</div>
