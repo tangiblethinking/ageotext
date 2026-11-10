@@ -14,8 +14,8 @@ export interface GeminiKey {
 export const geminiKeys: GeminiKey[] = [
   {
     id: "key-1",
-    secret: "PASTE_YOUR_GEMINI_API_KEY_HERE",
-    notes: "Primary key — paste your real key from Google AI Studio",
+    secret: "Gemini API Key",
+    notes: "AQ.Ab8RN6Kn0lniXupii8yD6RutEFV7OYAN7FW6mYEPZTkXXSbkkg",
   },
   // Duplicate the object above to add more keys:
   // {
