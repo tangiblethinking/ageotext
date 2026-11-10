@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import { geminiKeys } from "@/lib/keys";
 import { retrieveRelevantChunks } from "@/lib/content";
 
-const MODEL_PREFERENCE = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.8-flash", "gemini-3.6-flash"];
+const MODEL_PREFERENCE = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
 const limitedModels = new Map<string, number>();
 const limitedKeys = new Map<string, number>();
 
@@ -17,7 +17,8 @@ function markLimited(id: string, map: Map<string, number>, durationMs = 60000) {
   map.set(id, Date.now() + durationMs);
 }
 function getHealthyKey() {
-  return geminiKeys.find((k) => k.secret && !k.secret.includes("PASTE_") && !k.secret.includes("YOUR_") && !isLimited(k.id, limitedKeys));
+  // Accept any key whose secret is a non-empty string longer than 10 chars
+  return geminiKeys.find((k) => typeof k.secret === "string" && k.secret.trim().length > 10 && !isLimited(k.id, limitedKeys));
 }
 function getHealthyModel() {
   return MODEL_PREFERENCE.find((m) => !isLimited(m, limitedModels)) || MODEL_PREFERENCE[0];
@@ -29,14 +30,30 @@ export async function POST(req: NextRequest) {
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message required" }, { status: 400 });
     }
+
+    const key = getHealthyKey();
+    if (!key) {
+      const debug = {
+        keysLoaded: geminiKeys.length,
+        secrets: geminiKeys.map((k) => ({
+          id: k.id,
+          secretLength: (k.secret || "").length,
+          secretPrefix: (k.secret || "").slice(0, 4),
+        })),
+      };
+      return NextResponse.json({
+        error: "No usable API key found on the server.",
+        debug,
+      }, { status: 503 });
+    }
+
     const chunks = retrieveRelevantChunks(message, 6);
     const context = chunks.map((c) => `## ${c.heading} (${c.section})\n${c.text}`).join("\n\n");
     const systemInstruction = `You are a precise assistant for the AEO/GEO Semantic Architecture Optimization Guide. Answer ONLY using the provided context. Focus on AEO/GEO heading tags, semantic hierarchy, span resolution, PLP/PDP/Editorial structures, and copy tagging. Cite the section used. If outside the guide, say so.`;
     const prompt = `Context:\n${context}\n\nUser: ${message}`;
+
     let lastError = "";
     for (let attempt = 0; attempt < 3; attempt++) {
-      const key = getHealthyKey();
-      if (!key) return NextResponse.json({ error: "No valid API key configured. Paste your Gemini key in src/lib/keys.ts and redeploy." }, { status: 503 });
       const model = getHealthyModel();
       try {
         const ai = new GoogleGenAI({ apiKey: key.secret });
