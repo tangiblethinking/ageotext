@@ -1,34 +1,259 @@
-/* Typography Design System Tokens and Layout from original HTML */
-.text-h1 { font-family: "Spectral", serif; font-size: 2rem; line-height: 2rem; letter-spacing: -0.0625rem; font-weight: 400; }
-.text-h2 { font-family: 'DM Sans', sans-serif; font-size: 1.75rem; line-height: 1.75rem; letter-spacing: -0.0625rem; font-weight: 600; }
-.text-h3 { font-family: 'DM Sans', sans-serif; font-size: 1.5rem; line-height: 1.75rem; letter-spacing: -0.0625rem; font-weight: 300; }
-.text-subheading { font-family: 'DM Sans', sans-serif; font-size: 1.5rem; line-height: 1.75rem; letter-spacing: -0.0625rem; font-weight: 600; }
-.text-h4 { font-family: 'DM Sans', sans-serif; font-size: 1rem; line-height: 1.25rem; letter-spacing: -0.0625rem; font-weight: 600; }
-.text-h6 { font-family: "Spectral", serif; font-size: 1.5rem; line-height: 1.75rem; letter-spacing: -0.0625rem; font-weight: 400; }
-.text-subtitle { font-family: 'DM Sans', sans-serif; font-size: 1.25rem; line-height: 1.5rem; letter-spacing: -0.03125rem; font-weight: 400; }
-.text-overline-lg { font-family: 'DM Sans', sans-serif; font-size: 1rem; line-height: 1.25rem; text-transform: uppercase; letter-spacing: 0.1875rem; font-weight: 800; }
-.text-overline { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; line-height: 1rem; text-transform: uppercase; letter-spacing: 0.1875rem; font-weight: 800; }
-.text-body { font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 300; line-height: 1.25rem; letter-spacing: 0rem; }
-.text-caption { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 400; line-height: 1rem; letter-spacing: 0rem; }
-:root { --primary: #2563eb; --bg: #f8fafc; --card-bg: #ffffff; --text: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --meaning-bg: #f1f5f9; }
-body { background-color: var(--bg); color: var(--text); margin: 0; padding: 2.5rem 1.25rem; }
-.container { max-width: 960px; margin: 0 auto; background: var(--card-bg); padding: 3rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
-h1.document-title { color: #0f172a; border-bottom: 2px solid var(--border); padding-bottom: 0.75rem; margin-top: 0; margin-bottom: 1.5rem; }
-h2 { color: #1e293b; margin-top: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
-h3 { color: #334155; margin-top: 1.75rem; margin-bottom: 0.75rem; }
-h4 { color: #475569; margin-top: 1.25rem; margin-bottom: 0.5rem; }
-p { margin-top: 0; margin-bottom: 1rem; }
-ul, ol { padding-left: 1.5rem; margin-top: 0; margin-bottom: 1rem; }
-li { margin-bottom: 0.5rem; }
-.meaning { background-color: var(--meaning-bg); border-left: 4px solid var(--primary); padding: 0.875rem 1.25rem; margin: 0.75rem 0 1.5rem 0; border-radius: 0 6px 6px 0; }
-.meaning .label { color: var(--primary); margin-right: 0.25rem; }
-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
-th, td { border: 1px solid var(--border); padding: 0.875rem 1rem; text-align: left; vertical-align: top; }
-th { background-color: #f8fafc; color: #0f172a; }
-tr:nth-child(even) { background-color: #f8fafc; }
-code { background-color: #f1f5f9; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.85em; color: #0f172a; }
-.example-box { background: #f8fafc; border: 1px dashed var(--border); padding: 0.75rem 1rem; border-radius: 6px; margin: 0.5rem 0 1rem 0; }
-.section-eyebrow { color: var(--primary); margin-bottom: 0.25rem; display: block; }
-.token-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
-.token-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
-.token-tag { font-family: monospace; font-size: 0.85rem; background: #e2e8f0; color: #0f172a; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+/* ==========================================
+           Typography Design System Tokens
+           ================================          */
+
+        /* Heading 1 (Display / Hero) */
+        .text-h1 {
+          font-family: "Spectral", serif;
+          font-size: 2rem;
+          line-height: 2rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 400;
+        }
+
+        /* Heading 2 */
+        .text-h2 {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.75rem;
+          line-height: 1.75rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 600;
+        }
+
+        /* Heading 3 */
+        .text-h3 {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.5rem;
+          line-height: 1.75rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 300;
+        }
+
+        /* Subheading (H7 style: 1.5rem / 600 weight) */
+        .text-subheading {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.5rem;
+          line-height: 1.75rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 600;
+        }
+
+        /* Heading 4 */
+        .text-h4 {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1rem;
+          line-height: 1.25rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 600;
+        }
+
+        /* Heading 6 */
+        .text-h6 {
+          font-family: "Spectral", serif;
+          font-size: 1.5rem;
+          line-height: 1.75rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 400;
+        }
+
+        /* True Subtitle */
+        .text-subtitle {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.25rem;
+          line-height: 1.5rem;
+          letter-spacing: -0.03125rem;
+          font-weight: 400;
+        }
+
+        /* Large Overline / Eyebrow (Original H5 Style) */
+        .text-overline-lg {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1rem;
+          line-height: 1.25rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1875rem;
+          font-weight: 800;
+        }
+
+        /* Small Overline / Eyebrow (Original H8 Style) */
+        .text-overline {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.75rem;
+          line-height: 1rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1875rem;
+          font-weight: 800;
+        }
+
+        /* Body Paragraph */
+        .text-body {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1rem;
+          font-weight: 300;
+          line-height: 1.25rem;
+          letter-spacing: 0rem;
+        }
+
+        /* UI Caption */
+        .text-caption {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.75rem;
+          font-weight: 400;
+          line-height: 1rem;
+          letter-spacing: 0rem;
+        }
+
+        /* ==========================================
+           Layout & Global Styles
+           ================================          */
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --meaning-bg: #f1f5f9;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2.5rem 1.25rem;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        h1.document-title {
+            color: #0f172a;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.75rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            color: #1e293b;
+            margin-top: 2.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            color: #334155;
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        h4 {
+            color: #475569;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .meaning {
+            background-color: var(--meaning-bg);
+            border-left: 4px solid var(--primary);
+            padding: 0.875rem 1.25rem;
+            margin: 0.75rem 0 1.5rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .meaning .label {
+            color: var(--primary);
+            margin-right: 0.25rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.875rem 1rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        code {
+            background-color: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85em;
+            color: #0f172a;
+        }
+
+        .example-box {
+            background: #f8fafc;
+            border: 1px dashed var(--border);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin: 0.5rem 0 1rem 0;
+        }
+
+        .section-eyebrow {
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+
+        .token-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .token-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .token-tag {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #e2e8f0;
+            color: #0f172a;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
