@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { geminiKeys } from "@/lib/keys";
 import { retrieveRelevantChunks } from "@/lib/content";
 
-const MODELS = ["gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-2.5-flash-lite"];
+const MODELS = ["gemini-2.0-flash", "gemini-2.5-flash-lite", "gemini-1.5-flash"];
 
 async function tryGenerate(key: string, model: string, prompt: string, system: string) {
   const url1 = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
@@ -38,14 +37,12 @@ async function tryGenerate(key: string, model: string, prompt: string, system: s
 
 export async function POST(req: NextRequest) {
   try {
-    const { message } = await req.json();
+    const { message, apiKey } = await req.json();
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message required" }, { status: 400 });
     }
-
-    const keyObj = geminiKeys.find((k) => k.secret && k.secret.trim().length > 10);
-    if (!keyObj) {
-      return NextResponse.json({ error: "No key in src/lib/keys.ts" }, { status: 503 });
+    if (!apiKey || typeof apiKey !== "string" || apiKey.trim().length < 10) {
+      return NextResponse.json({ error: "Valid Gemini API key required" }, { status: 401 });
     }
 
     const chunks = retrieveRelevantChunks(message, 6);
@@ -56,7 +53,7 @@ export async function POST(req: NextRequest) {
     let lastError = "";
     for (const model of MODELS) {
       try {
-        const result = await tryGenerate(keyObj.secret, model, prompt, system);
+        const result = await tryGenerate(apiKey.trim(), model, prompt, system);
         if (result.text) {
           return NextResponse.json({
             answer: result.text,
