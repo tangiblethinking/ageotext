@@ -17,7 +17,7 @@ function markLimited(id: string, map: Map<string, number>, durationMs = 60000) {
   map.set(id, Date.now() + durationMs);
 }
 function getHealthyKey() {
-  return geminiKeys.find((k) => k.secret && !k.secret.includes("YOUR_") && !isLimited(k.id, limitedKeys));
+  return geminiKeys.find((k) => k.secret && !k.secret.includes("PASTE_") && !k.secret.includes("YOUR_") && !isLimited(k.id, limitedKeys));
 }
 function getHealthyModel() {
   return MODEL_PREFERENCE.find((m) => !isLimited(m, limitedModels)) || MODEL_PREFERENCE[0];
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     let lastError = "";
     for (let attempt = 0; attempt < 3; attempt++) {
       const key = getHealthyKey();
-      if (!key) return NextResponse.json({ error: "All keys limited. Try again shortly." }, { status: 503 });
+      if (!key) return NextResponse.json({ error: "No valid API key configured. Paste your Gemini key in src/lib/keys.ts and redeploy." }, { status: 503 });
       const model = getHealthyModel();
       try {
         const ai = new GoogleGenAI({ apiKey: key.secret });
