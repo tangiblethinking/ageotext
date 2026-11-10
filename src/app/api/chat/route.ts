@@ -5,7 +5,6 @@ import { retrieveRelevantChunks } from "@/lib/content";
 const MODELS = ["gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-2.5-flash-lite"];
 
 async function tryGenerate(key: string, model: string, prompt: string, system: string) {
-  // Method 1: x-goog-api-key header
   const url1 = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
   let res = await fetch(url1, {
     method: "POST",
@@ -13,13 +12,12 @@ async function tryGenerate(key: string, model: string, prompt: string, system: s
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       systemInstruction: { parts: [{ text: system }] },
-      generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
+      generationConfig: { temperature: 0.3, maxOutputTokens: 2048 },
     }),
   });
   let data = await res.json();
   if (res.ok) return { text: data?.candidates?.[0]?.content?.parts?.[0]?.text || "", method: "header" };
 
-  // Method 2: ?key= query parameter
   const url2 = `${url1}?key=${encodeURIComponent(key)}`;
   res = await fetch(url2, {
     method: "POST",
@@ -27,7 +25,7 @@ async function tryGenerate(key: string, model: string, prompt: string, system: s
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       systemInstruction: { parts: [{ text: system }] },
-      generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
+      generationConfig: { temperature: 0.3, maxOutputTokens: 2048 },
     }),
   });
   data = await res.json();
@@ -35,7 +33,6 @@ async function tryGenerate(key: string, model: string, prompt: string, system: s
 
   const err: any = new Error(data?.error?.message || `HTTP ${res.status}`);
   err.status = res.status;
-  err.raw = data;
   throw err;
 }
 
@@ -51,9 +48,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No key in src/lib/keys.ts" }, { status: 503 });
     }
 
-    const chunks = retrieveRelevantChunks(message, 5);
-    const context = chunks.map((c) => `## ${c.heading}\n${c.text}`).join("\n\n");
-    const system = "You are a precise assistant for the AEO/GEO Semantic Architecture Optimization Guide. Answer ONLY from the provided context. Cite the section. If the answer is not in the context, say so.";
+    const chunks = retrieveRelevantChunks(message, 6);
+    const context = chunks.map((c) => `## ${c.heading} (${c.section})\n${c.text}`).join("\n\n");
+    const system = "You are a precise assistant for the AEO/GEO Semantic Architecture Optimization Guide. Answer fully from the provided context. Include all relevant details and examples. Cite the sections used. If the answer is not in the context, say so.";
     const prompt = `Context:\n${context}\n\nQuestion: ${message}`;
 
     let lastError = "";
@@ -66,7 +63,6 @@ export async function POST(req: NextRequest) {
             sources: chunks.map((c) => ({ heading: c.heading, section: c.section })),
             modelUsed: model,
             method: result.method,
-            keyPrefix: keyObj.secret.slice(0, 6),
           });
         }
       } catch (err: any) {
@@ -75,11 +71,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      error: lastError || "No model responded",
-      keyPrefix: keyObj.secret.slice(0, 6),
-      keyLength: keyObj.secret.length,
-    }, { status: 503 });
+    return NextResponse.json({ error: lastError || "No model responded" }, { status: 503 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Internal error" }, { status: 500 });
   }
