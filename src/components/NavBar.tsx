@@ -18,7 +18,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import KeyIcon from "@mui/icons-material/VpnKey";
 
-const STORAGE_KEY = "gemini_api_key";
+import { readStoredApiKey, saveApiKey, deleteApiKey, isPlausibleApiKey } from "@/lib/api-key-store";
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
@@ -30,13 +30,13 @@ export default function NavBar() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = readStoredApiKey();
     setHasKey(!!saved);
     if (saved) setKeyInput(saved);
   }, []);
 
   const handleOpen = () => {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = readStoredApiKey();
     setKeyInput(saved || "");
     setVerified(false);
     setError("");
@@ -45,7 +45,7 @@ export default function NavBar() {
 
   const handleVerify = async () => {
     const trimmed = keyInput.trim();
-    if (!trimmed || trimmed.length < 10) {
+    if (!isPlausibleApiKey(trimmed)) {
       setError("Enter a valid Gemini API key");
       return;
     }
@@ -53,22 +53,16 @@ export default function NavBar() {
     setError("");
     setVerified(false);
     try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(trimmed)}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: "Hi" }] }],
-            generationConfig: { maxOutputTokens: 5 },
-          }),
-        }
-      );
-      if (res.ok) {
+      const res = await fetch("/api/verify-key", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey: trimmed }),
+      });
+      const data = await res.json();
+      if (data.ok) {
         setVerified(true);
       } else {
-        const data = await res.json();
-        setError(data?.error?.message || "Key rejected by Gemini");
+        setError(data.error || "Key rejected");
       }
     } catch {
       setError("Network error during verification");
@@ -79,20 +73,17 @@ export default function NavBar() {
 
   const handleSave = () => {
     const trimmed = keyInput.trim();
-    if (!trimmed) return;
-    localStorage.setItem(STORAGE_KEY, trimmed);
+    if (!isPlausibleApiKey(trimmed)) return;
+    saveApiKey(trimmed);
     setHasKey(true);
     setOpen(false);
-    // Notify other components (e.g. chat)
-    window.dispatchEvent(new Event("gemini-key-changed"));
   };
 
   const handleClear = () => {
-    localStorage.removeItem(STORAGE_KEY);
+    deleteApiKey();
     setKeyInput("");
     setHasKey(false);
     setVerified(false);
-    window.dispatchEvent(new Event("gemini-key-changed"));
   };
 
   return (

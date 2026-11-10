@@ -22,7 +22,7 @@ type Message = {
 
 type PanelMode = "closed" | "default" | "expanded";
 
-const STORAGE_KEY = "gemini_api_key";
+import { readStoredApiKey } from "@/lib/api-key-store";
 
 export default function ChatFAB() {
   const [mode, setMode] = useState<PanelMode>("closed");
@@ -33,16 +33,16 @@ export default function ChatFAB() {
   const endRef = useRef<HTMLDivElement>(null);
 
   const refreshKey = () => {
-    setHasKey(!!localStorage.getItem(STORAGE_KEY));
+    setHasKey(!!readStoredApiKey());
   };
 
   useEffect(() => {
     refreshKey();
     const onChange = () => refreshKey();
-    window.addEventListener("gemini-key-changed", onChange);
+    window.addEventListener("ageotext-key-changed", onChange);
     window.addEventListener("storage", onChange);
     return () => {
-      window.removeEventListener("gemini-key-changed", onChange);
+      window.removeEventListener("ageotext-key-changed", onChange);
       window.removeEventListener("storage", onChange);
     };
   }, []);
@@ -54,7 +54,7 @@ export default function ChatFAB() {
   const send = async () => {
     const text = input.trim();
     if (!text || thinking || !hasKey) return;
-    const apiKey = localStorage.getItem(STORAGE_KEY);
+    const apiKey = readStoredApiKey();
     if (!apiKey) return;
 
     setInput("");
