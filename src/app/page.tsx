@@ -14,7 +14,7 @@ export default function Home() {
 
           <ul className="space-y-4 list-disc pl-5 text-base">
             <li>
-              <strong>Structural Hierarchy Over Visual Styling:</strong> AI search engines parse web pages based entirely on structural DOM hierarchy (<code className="bg-slate-100 px-1 rounded text-sm"><h1></code> through <code className="bg-slate-100 px-1 rounded text-sm"><h6></code>). They ignore CSS visual sizing (px, rem).
+              <strong>Structural Hierarchy Over Visual Styling:</strong> AI search engines parse web pages based entirely on structural DOM hierarchy (h1 through h6). They ignore CSS visual sizing (px, rem).
               <div className="mt-2 bg-slate-100 border-l-4 border-blue-600 p-3 rounded-r text-sm">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-blue-600 mr-2">MEANING</span>
                 Visual styling does not need to be changed; rather, the technical tag of the style must adhere to the rules/constraints for optimization.
@@ -24,17 +24,17 @@ export default function Home() {
               <strong>The span Resolution for Non-Optimal Sizing:</strong> When a lower-size visual style must appear before a larger heading (or levels would be skipped), use a span with the desired class instead of a real heading tag.
               <div className="mt-2 bg-slate-100 border-l-4 border-blue-600 p-3 rounded-r text-sm">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-blue-600 mr-2">RESOLUTION</span>
-                Use <code className="bg-slate-100 px-1 rounded text-sm"><span class="text-h4"></code> (or any token class). This preserves linear DOM hierarchy for AEO/GEO without disrupting designer visual intent.
+                Use a span with class text-h4 (or any token class). This preserves linear DOM hierarchy for AEO/GEO without disrupting designer visual intent.
               </div>
             </li>
             <li>
               <strong>Distinct Semantic Maps:</strong> PLPs, PDPs, and Editorial/Landing Pages represent three distinct semantic maps. Prioritize Homepage, then PDP, then PLP.
             </li>
             <li>
-              <strong>Core Optimization Rule:</strong> Maintain a strict linear hierarchy (h1 → h2 → h3 → h4 → h5 → h6). Skipping levels degrades graph clarity. Visual size does not have to descend with tag rank.
+              <strong>Core Optimization Rule:</strong> Maintain a strict linear hierarchy (h1 to h2 to h3 to h4 to h5 to h6). Skipping levels degrades graph clarity. Visual size does not have to descend with tag rank.
             </li>
             <li>
-              <strong>Heading-to-Paragraph RAG Pairing:</strong> Every heading must be immediately followed by a high-density answer block (40–60 word summary), list, or table.
+              <strong>Heading-to-Paragraph RAG Pairing:</strong> Every heading must be immediately followed by a high-density answer block (40-60 word summary), list, or table.
             </li>
           </ul>
 
@@ -44,17 +44,17 @@ export default function Home() {
 
           <div className="space-y-3">
             {[
-              { tag: ".text-h1", name: "Heading 1 (Display / Hero)", spec: "Spectral · 32px/32px · 400", role: "Exactly one <h1> per page. Establishes the overarching semantic entity." },
-              { tag: ".text-h2", name: "Heading 2", spec: "DM Sans · 28px/28px · 600", role: "Primary query trigger. Framed as explicit conversational questions or high-intent statements." },
-              { tag: ".text-h3", name: "Heading 3", spec: "DM Sans · 24px/28px · 300", role: "Entity chunk level. Breaks down concepts or sub-topics under an h2." },
-              { tag: ".text-subheading", name: "Subheading", spec: "DM Sans · 24px/28px · 600", role: "Non-heading. Use via span for visual emphasis without breaking DOM hierarchy." },
-              { tag: ".text-h4", name: "Heading 4", spec: "DM Sans · 16px/20px · 600", role: "Detail level under h3, or applied as span when smaller styling is needed before an h1." },
-              { tag: ".text-h6", name: "Heading 6", spec: "Spectral · 24px/28px · 400", role: "Granular technical attributes in nested structures. Never a visual shortcut for small text." },
-              { tag: ".text-subtitle", name: "True Subtitle", spec: "DM Sans · 20px/24px · 400", role: "Non-heading subtext under H1/H2. Applied via p or span." },
-              { tag: ".text-overline-lg", name: "Large Overline / Eyebrow", spec: "DM Sans · 16px · 800 · UPPERCASE", role: "Major section eyebrow. Always a span so it never invalidates hierarchy." },
-              { tag: ".text-overline", name: "Small Overline / Eyebrow", spec: "DM Sans · 12px · 800 · UPPERCASE", role: "Micro eyebrow. Applied via span above primary section titles." },
-              { tag: ".text-body", name: "Body Paragraph", spec: "DM Sans · 16px/20px · 300", role: "RAG payload layer. 40–60 word answer blocks immediately following headings." },
-              { tag: ".text-caption", name: "UI Caption / Helper Text", spec: "DM Sans · 12px/16px · 400", role: "Non-heading fine print for captions, disclaimers, and legal text." },
+              { tag: ".text-h1", name: "Heading 1 (Display / Hero)", spec: "Spectral / 32px/32px / 400", role: "Exactly one h1 per page. Establishes the overarching semantic entity." },
+              { tag: ".text-h2", name: "Heading 2", spec: "DM Sans / 28px/28px / 600", role: "Primary query trigger. Framed as explicit conversational questions or high-intent statements." },
+              { tag: ".text-h3", name: "Heading 3", spec: "DM Sans / 24px/28px / 300", role: "Entity chunk level. Breaks down concepts or sub-topics under an h2." },
+              { tag: ".text-subheading", name: "Subheading", spec: "DM Sans / 24px/28px / 600", role: "Non-heading. Use via span for visual emphasis without breaking DOM hierarchy." },
+              { tag: ".text-h4", name: "Heading 4", spec: "DM Sans / 16px/20px / 600", role: "Detail level under h3, or applied as span when smaller styling is needed before an h1." },
+              { tag: ".text-h6", name: "Heading 6", spec: "Spectral / 24px/28px / 400", role: "Granular technical attributes in nested structures. Never a visual shortcut for small text." },
+              { tag: ".text-subtitle", name: "True Subtitle", spec: "DM Sans / 20px/24px / 400", role: "Non-heading subtext under H1/H2. Applied via p or span." },
+              { tag: ".text-overline-lg", name: "Large Overline / Eyebrow", spec: "DM Sans / 16px / 800 / UPPERCASE", role: "Major section eyebrow. Always a span so it never invalidates hierarchy." },
+              { tag: ".text-overline", name: "Small Overline / Eyebrow", spec: "DM Sans / 12px / 800 / UPPERCASE", role: "Micro eyebrow. Applied via span above primary section titles." },
+              { tag: ".text-body", name: "Body Paragraph", spec: "DM Sans / 16px/20px / 300", role: "RAG payload layer. 40-60 word answer blocks immediately following headings." },
+              { tag: ".text-caption", name: "UI Caption / Helper Text", spec: "DM Sans / 12px/16px / 400", role: "Non-heading fine print for captions, disclaimers, and legal text." },
             ].map((t) => (
               <div key={t.tag} className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-1">
@@ -83,14 +83,14 @@ export default function Home() {
           <p className="text-base text-slate-600 mb-3">Feeds AI engines product specs, active ingredients, clinical proof, and purchase intent data.</p>
           <ul className="list-disc pl-5 space-y-2 text-sm">
             <li><strong>h1:</strong> Full exact product title.</li>
-            <li><strong>h2:</strong> Major functional blocks framed for high-intent queries (Ingredients & Supplement Facts, How to Take, Clinical Results & Reviews).</li>
+            <li><strong>h2:</strong> Major functional blocks framed for high-intent queries (Ingredients and Supplement Facts, How to Take, Clinical Results and Reviews).</li>
             <li><strong>h3:</strong> Specific sub-attributes nested under h2 blocks.</li>
             <li><strong>h4:</strong> Technical certifications or dense sub-data.</li>
             <li><strong>h5 / h6:</strong> Deep technical specs or precise ingredient breakdowns.</li>
-            <li><strong>Boilerplate & Fine Print:</strong> Non-heading markup only (p or span with text-caption) for legal disclosures.</li>
+            <li><strong>Boilerplate and Fine Print:</strong> Non-heading markup only (p or span with text-caption) for legal disclosures.</li>
           </ul>
 
-          <h3 className="text-xl font-semibold text-slate-700 mt-6 mb-2">C. Copy-Heavy Landing Pages & Editorial Content</h3>
+          <h3 className="text-xl font-semibold text-slate-700 mt-6 mb-2">C. Copy-Heavy Landing Pages and Editorial Content</h3>
           <p className="text-base text-slate-600 mb-3">Maps user problems to commercial solutions. Primary source for GEO citations.</p>
           <ul className="list-disc pl-5 space-y-2 text-sm">
             <li><strong>h1:</strong> Editorial title containing the target entity or core topic.</li>
@@ -117,7 +117,7 @@ export default function Home() {
                   <td className="border border-slate-200 p-3">Body Content (p)</td>
                   <td className="border border-slate-200 p-3">Plain visual body text</td>
                   <td className="border border-slate-200 p-3">Precise RAG answer payloads immediately following H tags</td>
-                  <td className="border border-slate-200 p-3 text-xs">40–60 word summaries under h2 for AI Overview extraction</td>
+                  <td className="border border-slate-200 p-3 text-xs">40-60 word summaries under h2 for AI Overview extraction</td>
                 </tr>
                 <tr className="bg-slate-50">
                   <td className="border border-slate-200 p-3">Grid Item Names (PLP)</td>
@@ -138,13 +138,13 @@ export default function Home() {
                   <td className="border border-slate-200 p-3 text-xs">Preserves linear hierarchy without visual compromise</td>
                 </tr>
                 <tr>
-                  <td className="border border-slate-200 p-3">Sidebar & Footers</td>
+                  <td className="border border-slate-200 p-3">Sidebar and Footers</td>
                   <td className="border border-slate-200 p-3">Generic h3/h4</td>
                   <td className="border border-slate-200 p-3">Stripped of H-tags; CSS spans only</td>
                   <td className="border border-slate-200 p-3 text-xs">Removes non-entity content from the hierarchy</td>
                 </tr>
                 <tr className="bg-slate-50">
-                  <td className="border border-slate-200 p-3">Disclaimers & Disclosures</td>
+                  <td className="border border-slate-200 p-3">Disclaimers and Disclosures</td>
                   <td className="border border-slate-200 p-3">h4 at section bottoms</td>
                   <td className="border border-slate-200 p-3">Plain p.text-caption or div</td>
                   <td className="border border-slate-200 p-3 text-xs">Keeps legal text out of the semantic topic map</td>
@@ -153,7 +153,7 @@ export default function Home() {
             </table>
           </div>
 
-          <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-blue-600 block mb-1 mt-10">Consensus & Authority</span>
+          <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-blue-600 block mb-1 mt-10">Consensus and Authority</span>
           <h2 className="text-2xl font-semibold tracking-tight text-slate-800 border-b border-slate-200 pb-2 mb-4">5. Off-Page Entity Consensus (The GEO Authority Layer)</h2>
           <p className="text-base text-slate-600 mb-3">On-page HTML hierarchy structures content for crawlers, but LLMs validate citations through cross-source entity consensus.</p>
           <ol className="list-decimal pl-5 space-y-2 text-sm">
