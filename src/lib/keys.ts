@@ -1,5 +1,6 @@
 // Server-only Gemini API keys.
 // Edit this file directly, then commit and redeploy.
+// Array pattern: duplicate entries to add more keys.
 // Never import this file from client components.
 
 import 'server-only';
@@ -13,14 +14,13 @@ export interface GeminiKey {
 export const geminiKeys: GeminiKey[] = [
   {
     id: "key-1",
-    secret: "AQ.Ab8RN6Kn0lniXupii8yD6RutEFV7OYAN7FW6mYEPZTkXXSbkkg",
-    notes: "Primary key — replace with real key from Google AI Studio",
+    secret: "PASTE_YOUR_GEMINI_API_KEY_HERE",
+    notes: "Primary key — paste your real key from Google AI Studio",
   },
-  {
-    id: "key-2",
-    secret: "YOUR_SECOND_GEMINI_API_KEY_HERE",
-    notes: "Backup key",
-  },
-  // Add more keys as needed. Format:
-  // { id: "key-3", secret: "AIza...", notes: "optional" },
+  // Duplicate the object above to add more keys:
+  // {
+  //   id: "key-2",
+  //   secret: "AIza...",
+  //   notes: "Backup",
+  // },
 ];
