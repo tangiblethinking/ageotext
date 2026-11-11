@@ -258,8 +258,18 @@
             font-weight: 600;
         }
 
-/* Source anchor scroll offset for fixed NavBar */
+/* Source anchor scroll offset for the sticky NavBar */
 #hierarchy, #span-resolution, #semantic-maps, #linear-hierarchy, #rag-pairing,
 #tokens, #plp, #pdp, #editorial, #matrix, #consensus {
   scroll-margin-top: 72px;
+}
+
+/* Keep wide tables from widening the page on phones (which would push the
+   sticky NavBar and the full-screen design overlay off-screen). */
+@media (max-width: 640px) {
+  table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -17,8 +17,35 @@ import Chip from "@mui/material/Chip";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import KeyIcon from "@mui/icons-material/VpnKey";
+import CloseIcon from "@mui/icons-material/Close";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 import { readStoredApiKey, saveApiKey, deleteApiKey, isPlausibleApiKey } from "@/lib/api-key-store";
+
+type DesignId = "current-h" | "future-h" | "font-styles";
+
+interface DesignLink {
+  id: DesignId;
+  label: string;
+  hash: string;
+  src: string;
+}
+
+/** Design reference pages served from /public/designs, opened in an iframe overlay. */
+const DESIGNS: DesignLink[] = [
+  { id: "current-h", label: "Current H Design", hash: "#design-current-h", src: "/designs/current-h-design.html" },
+  { id: "future-h", label: "Future H Design", hash: "#design-future-h", src: "/designs/future-h-design.html" },
+  { id: "font-styles", label: "Current Font Styles", hash: "#design-font-styles", src: "/designs/current-font-styles.html" },
+];
+
+const designFromHash = (hash: string) => DESIGNS.find((d) => d.hash === hash) ?? null;
+
+/** Sits above SupportBot (FAB + panel use zIndex 1300). */
+const DESIGN_DIALOG_Z_INDEX = 1400;
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
@@ -28,6 +55,48 @@ export default function NavBar() {
   const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState("");
+
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+  // Design open in the overlay (drives the iframe src) and the last one shown
+  // (keeps the header label stable during the close transition).
+  const [designId, setDesignId] = useState<DesignId | null>(null);
+  const [shownDesignId, setShownDesignId] = useState<DesignId | null>(null);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+  const activeDesign = DESIGNS.find((d) => d.id === designId) ?? null;
+  const shownDesign = DESIGNS.find((d) => d.id === shownDesignId) ?? null;
+
+  const openDesign = useCallback((design: DesignLink) => {
+    setDesignId(design.id);
+    setShownDesignId(design.id);
+  }, []);
+
+  const handleDesignClick = (design: DesignLink) => {
+    setMenuAnchor(null);
+    if (window.location.hash !== design.hash) {
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${design.hash}`);
+    }
+    openDesign(design);
+  };
+
+  const closeDesign = () => {
+    setDesignId(null);
+    if (designFromHash(window.location.hash)) {
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    }
+  };
+
+  // Deep links: #design-current-h, #design-future-h, #design-font-styles
+  // open the matching overlay on load and on hashchange. Other hashes (guide anchors) are ignored.
+  useEffect(() => {
+    const syncFromHash = () => {
+      const design = designFromHash(window.location.hash);
+      if (design) openDesign(design);
+    };
+    syncFromHash();
+    window.addEventListener("hashchange", syncFromHash);
+    return () => window.removeEventListener("hashchange", syncFromHash);
+  }, [openDesign]);
 
   useEffect(() => {
     const saved = readStoredApiKey();
@@ -89,36 +158,178 @@ export default function NavBar() {
   return (
     <>
       <AppBar
-        position="fixed"
+        position="sticky"
         elevation={0}
         sx={{
+          top: 0,
           bgcolor: "#FFFFFF",
           borderBottom: "1px solid rgba(60,60,67,0.12)",
           color: "#000",
           zIndex: 1200,
         }}
       >
-        <Toolbar sx={{ minHeight: 56 }}>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600, fontSize: "1.05rem" }}>
+        <Toolbar sx={{ minHeight: 56, gap: { xs: 1, sm: 1.5 } }}>
+          <Typography
+            variant="h6"
+            component="div"
+            noWrap
+            sx={{ flexGrow: 1, minWidth: 0, fontWeight: 600, fontSize: "1.05rem" }}
+          >
             AEO / GEO Guide
           </Typography>
+
+          {/* sm and up: inline design links */}
+          <Box
+            component="nav"
+            aria-label="Design references"
+            sx={{ display: { xs: "none", sm: "flex" }, alignItems: "center", gap: 0.5, flexShrink: 0 }}
+          >
+            {DESIGNS.map((design) => {
+              const isActive = design.id === designId;
+              return (
+                <Button
+                  key={design.id}
+                  href={design.hash}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDesignClick(design);
+                  }}
+                  aria-current={isActive ? "page" : undefined}
+                  aria-haspopup="dialog"
+                  size="small"
+                  sx={{
+                    textTransform: "none",
+                    whiteSpace: "nowrap",
+                    borderRadius: 2,
+                    color: isActive ? "#007AFF" : "rgba(0,0,0,0.78)",
+                    fontWeight: isActive ? 600 : 500,
+                    fontSize: { sm: "0.8rem", md: "0.875rem" },
+                    px: { sm: 0.75, md: 1.25 },
+                    minWidth: 0,
+                    bgcolor: isActive ? "rgba(0,122,255,0.08)" : "transparent",
+                    "&:hover": { bgcolor: "rgba(0,122,255,0.08)" },
+                  }}
+                >
+                  {design.label}
+                </Button>
+              );
+            })}
+          </Box>
+
+          {/* xs: collapsed "Designs" menu */}
+          <Box component="nav" aria-label="Design references" sx={{ display: { xs: "block", sm: "none" }, flexShrink: 0 }}>
+            <Button
+              id="designs-menu-button"
+              onClick={(e) => setMenuAnchor(e.currentTarget)}
+              aria-controls={menuAnchor ? "designs-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={menuAnchor ? "true" : undefined}
+              endIcon={<ExpandMoreIcon />}
+              size="small"
+              sx={{ textTransform: "none", borderRadius: 2, color: "rgba(0,0,0,0.78)", whiteSpace: "nowrap", minWidth: 0 }}
+            >
+              Designs
+            </Button>
+            <Menu
+              id="designs-menu"
+              anchorEl={menuAnchor}
+              open={Boolean(menuAnchor)}
+              onClose={() => setMenuAnchor(null)}
+              MenuListProps={{ "aria-labelledby": "designs-menu-button" }}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              {DESIGNS.map((design) => (
+                <MenuItem
+                  key={design.id}
+                  selected={design.id === designId}
+                  aria-current={design.id === designId ? "page" : undefined}
+                  onClick={() => handleDesignClick(design)}
+                >
+                  {design.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+
           <Button
             onClick={handleOpen}
             startIcon={<KeyIcon />}
             variant={hasKey ? "contained" : "outlined"}
             size="small"
+            aria-label={hasKey ? "API Key" : "API Key (required)"}
             sx={{
               textTransform: "none",
               borderRadius: 2,
+              whiteSpace: "nowrap",
+              flexShrink: 0,
               ...(hasKey && { bgcolor: "#007AFF", "&:hover": { bgcolor: "#0051D5" } }),
             }}
           >
-            API Key{hasKey ? "" : " (required)"}
+            API Key
+            {!hasKey && (
+              <Box component="span" sx={{ display: { xs: "none", md: "inline" } }}>
+                &nbsp;(required)
+              </Box>
+            )}
           </Button>
         </Toolbar>
       </AppBar>
-      {/* Spacer so content is not hidden under fixed bar */}
-      <Box sx={{ height: 56 }} />
+
+      <Dialog
+        open={Boolean(activeDesign)}
+        onClose={closeDesign}
+        fullScreen={isXs}
+        maxWidth={false}
+        aria-labelledby="design-dialog-title"
+        TransitionProps={{ onExited: () => setShownDesignId(null) }}
+        sx={{ zIndex: DESIGN_DIALOG_Z_INDEX }}
+        PaperProps={{
+          sx: isXs
+            ? { display: "flex", flexDirection: "column" }
+            : {
+                display: "flex",
+                flexDirection: "column",
+                width: "calc(100vw - 32px)",
+                height: "calc(100vh - 32px)",
+                maxWidth: "none",
+                maxHeight: "none",
+                m: 2,
+                borderRadius: 2,
+                overflow: "hidden",
+              },
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            pl: 2,
+            pr: 1,
+            minHeight: 52,
+            borderBottom: "1px solid rgba(60,60,67,0.12)",
+            flexShrink: 0,
+          }}
+        >
+          <Typography id="design-dialog-title" component="div" role="heading" aria-level={2} noWrap sx={{ flexGrow: 1, minWidth: 0, m: 0, p: 0, border: 0, fontWeight: 600, fontSize: "1rem" }}>
+            {shownDesign?.label}
+          </Typography>
+          <IconButton onClick={closeDesign} aria-label="Close design overlay" edge="end">
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Box sx={{ flex: 1, minHeight: 0, position: "relative", bgcolor: "#f8fafc" }}>
+          {activeDesign && (
+            <iframe
+              key={activeDesign.id}
+              src={activeDesign.src}
+              title={activeDesign.label}
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0, display: "block" }}
+            />
+          )}
+        </Box>
+      </Dialog>
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>API keys</DialogTitle>

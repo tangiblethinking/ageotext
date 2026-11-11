@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typography Design System Showcase</title>
+    
+    <!-- Google Fonts for Spectral and DM Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+           Typography Design System Tokens
+           ================================          */
+
+        /* Heading 1 (Display / Hero) */
+        h1 {
+          font-family: "Spectral", serif;
+          font-size: 2rem;
+          line-height: 2rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 400;
+        }
+
+        /* Heading 2 */
+        h2 {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.75rem;
+          line-height: 1.75rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 600;
+        }
+
+        /* Heading 3 */
+        h3 {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.5rem;
+          line-height: 1.75rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 300;
+        }
+
+        /* Subheading (Persisted from original H7 style: 1.5rem / 600 weight) */
+        subheading {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.5rem;
+          line-height: 1.75rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 600;
+        }
+
+        /* Heading 4 */
+        h4 {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1rem;
+          line-height: 1.25rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 600;
+        }
+
+        /* Heading 6 */
+        h6 {
+          font-family: "Spectral", serif;
+          font-size: 1.5rem;
+          line-height: 1.75rem;
+          letter-spacing: -0.0625rem;
+          font-weight: 400;
+        }
+
+        /* True Subtitle (Scaled down for realistic hierarchy under H1/H2) */
+        subtitle {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1.25rem;
+          line-height: 1.5rem;
+          letter-spacing: -0.03125rem;
+          font-weight: 400;
+        }
+
+        /* Large Overline / Eyebrow (Original H5 style) */
+        overline-lg {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1rem;
+          line-height: 1.25rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1875rem;
+          font-weight: 800;
+        }
+
+        /* Small Overline / Eyebrow (Original H8 style) */
+        overline {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.75rem;
+          line-height: 1rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1875rem;
+          font-weight: 800;
+        }
+
+        /* Body Paragraph */
+        body {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 1rem;
+          font-weight: 300;
+          line-height: 1.25rem;
+          letter-spacing: 0rem;
+        }
+
+        /* True UI Caption (For image captions, footnotes, helper text) */
+        caption {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 0.75rem;
+          font-weight: 400;
+          line-height: 1rem;
+          letter-spacing: 0rem;
+        }
+
+        /* ==========================================
+           Showcase Page Layout Styles
+           ================================          */
+        body {
+          background-color: #f8fafc;
+          color: #0f172a;
+          font-family: 'DM Sans', sans-serif;
+          margin: 0;
+          padding: 40px 20px;
+        }
+
+        .showcase-container {
+          max-width: 800px;
+          margin: 0 auto;
+          background: #ffffff;
+          padding: 40px;
+          border-radius: 12px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+          font-size: 1.75rem;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+
+        .page-description {
+          color: #64748b;
+          margin-bottom: 32px;
+          font-size: 0.95rem;
+        }
+
+        .token-group {
+          margin-bottom: 32px;
+          padding-bottom: 24px;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        .token-group:last-child {
+          border-bottom: none;
+          margin-bottom: 0;
+          padding-bottom: 0;
+        }
+
+        .token-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+
+        .token-tag {
+          font-family: monospace;
+          font-size: 0.85rem;
+          background: #f1f5f9;
+          color: #0f172a;
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-weight: 600;
+        }
+
+        .token-label {
+          font-size: 0.85rem;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .example-render {
+          margin-bottom: 12px;
+          padding: 8px 0;
+        }
+
+        .style-details {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 6px;
+          padding: 12px 16px;
+          font-family: monospace;
+          font-size: 0.8rem;
+          color: #334155;
+          margin: 0;
+          white-space: pre-wrap;
+          max-width: 100%;
+          overflow-x: auto;
+          box-sizing: border-box;
+        }
+
+        /* ==========================================
+           Responsive Layout
+           ================================          */
+        .showcase-container {
+          box-sizing: border-box;
+          max-width: min(800px, 100%);
+        }
+
+        .token-header {
+          flex-wrap: wrap;
+        }
+
+        .example-render {
+          max-width: 100%;
+          overflow-x: auto;
+          overflow-wrap: break-word;
+        }
+
+        @media (max-width: 640px) {
+          body {
+            padding: 16px 8px;
+          }
+
+          .showcase-container {
+            padding: 20px 16px;
+            border-radius: 8px;
+          }
+
+          .page-title {
+            font-size: clamp(1.25rem, 6vw, 1.5rem);
+            line-height: 1.2;
+          }
+
+          .page-description {
+            margin-bottom: 24px;
+          }
+
+          .token-group {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+          }
+
+          .token-header {
+            gap: 8px;
+          }
+
+          .style-details {
+            padding: 10px 12px;
+            font-size: 0.75rem;
+          }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="showcase-container">
+        <h1 class="page-title">Typography Token Showcase</h1>
+        <p class="page-description">Existing font styles mapped for optimized frontend building for known AEO/GEO model(ai/robot) practices.</p>
+
+        <!-- Heading 1 -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">h1</span>
+                <span class="token-label">Heading 1 (Display / Hero)</span>
+            </div>
+            <div class="example-render text-h1">Good things begin within.</div>
+            <pre class="style-details">font-family: "Spectral", serif;
+font-size: 2rem; (32px)
+line-height: 2rem; (32px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 400;
+text-transform: none;</pre>
+        </div>
+
+        <!-- Heading 2 -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">h2</span>
+                <span class="token-label">Heading 2</span>
+            </div>
+            <div class="example-render text-h2">Good things begin within.</div>
+            <pre class="style-details">font-family: 'DM Sans', sans-serif;
+font-size: 1.75rem; (28px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 600;
+text-transform: none;</pre>
+        </div>
+
+        <!-- Heading 3 -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">h3</span>
+                <span class="token-label">Heading 3</span>
+            </div>
+            <div class="example-render text-h3">Good things begin within.</div>
+            <pre class="style-details">font-family: 'DM Sans', sans-serif;
+font-size: 1.5rem; (24px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 300;
+text-transform: none;</pre>
+        </div>
+
+        <!-- Subheading (H7 Style) -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">subheading</span>
+                <span class="token-label">Subheading (Persisted H7 Style)</span>
+            </div>
+            <div class="example-render text-subheading">Good things begin within.</div>
+            <pre class="style-details">font-family: 'DM Sans', sans-serif;
+font-size: 1.5rem; (24px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 600;
+text-transform: none;</pre>
+        </div>
+
+        <!-- Heading 4 -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">h4</span>
+                <span class="token-label">Heading 4</span>
+            </div>
+            <div class="example-render text-h4">Good things begin within.</div>
+            <pre class="style-details">font-family: 'DM Sans', sans-serif;
+font-size: 1rem; (16px)
+line-height: 1.25rem; (20px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 600;
+text-transform: none;</pre>
+        </div>
+
+        <!-- Heading 6 -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">h6</span>
+                <span class="token-label">Heading 6</span>
+            </div>
+            <div class="example-render text-h6">Good things begin within.</div>
+            <pre class="style-details">font-family: "Spectral", serif;
+font-size: 1.5rem; (24px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 400;
+text-transform: none;</pre>
+        </div>
+
+        <!-- Subtitle -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">subtitle</span>
+                <span class="token-label">True Subtitle</span>
+            </div>
+            <div class="example-render text-subtitle">Good things begin within.</div>
+            <pre class="style-details">font-family: 'DM Sans', sans-serif;
+font-size: 1.25rem; (20px)
+line-height: 1.5rem; (24px)
+letter-spacing: -0.03125rem; (-0.5px)
+font-weight: 400;
+text-transform: none;</pre>
+        </div>
+
+        <!-- Large Overline (H5 Style) -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">overline-lg</span>
+                <span class="token-label">Large Overline / Eyebrow (H5 Style)</span>
+            </div>
+            <div class="example-render text-overline-lg">Gut Health</div>
+            <pre class="style-details">font-family: 'DM Sans', sans-serif;
+font-size: 1rem; (16px)
+line-height: 1.25rem; (20px)
+letter-spacing: 0.1875rem; (3px)
+font-weight: 800;
+text-transform: uppercase;</pre>
+        </div>
+
+        <!-- Small Overline (H8 Style) -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">overline-sm</span>
+                <span class="token-label">Small Overline / Eyebrow (H8 Style)</span>
+            </div>
+            <div class="example-render text-overline">Gut Health</div>
+            <pre class="style-details">font-family: 'DM Sans', sans-serif;
+font-size: 0.75rem; (12px)
+line-height: 1rem; (16px)
+letter-spacing: 0.1875rem; (3px)
+font-weight: 800;
+text-transform: uppercase;</pre>
+        </div>
+
+        <!-- Body Paragraph -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">Paragraph</span>
+                <span class="token-label">Body Paragraph</span>
+            </div>
+            <div class="example-render text-body">Support your body's foundation with clean, science-backed formulas to feel your best from the inside out.</div>
+            <pre class="style-details">font-family: 'DM Sans', sans-serif;
+font-size: 1rem; (16px)
+line-height: 1.25rem; (20px)
+letter-spacing: 0rem; (0px)
+font-weight: 300;
+text-transform: none;</pre>
+        </div>
+
+        <!-- Caption -->
+        <div class="token-group">
+            <div class="token-header">
+                <span class="token-tag">caption</span>
+                <span class="token-label">UI Caption / Helper Text</span>
+            </div>
+            <div class="example-render text-caption">Support your body's foundation with clean, science-backed formulas to feel your best from the inside out.</div>
+            <pre class="style-details">font-family: 'DM Sans', sans-serif;
+font-size: 0.75rem; (12px)
+line-height: 1rem; (16px)
+letter-spacing: 0rem; (0px)
+font-weight: 400;
+text-transform: none;</pre>
+        </div>
+
+    </div>
+
+</body>
+</html>

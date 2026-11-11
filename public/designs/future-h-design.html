@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typography Design System - Interactive Specimen Viewer</title>
+    
+    <!-- Google Fonts for Spectral and DM Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 30px 20px;
+            background-color: #0f172a;
+            font-family: 'DM Sans', sans-serif;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        h1.title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+
+        p.subtitle {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Container holding the background image and interactive hotspots.
+           No overflow clipping here: tooltips render in a shared, fixed-position
+           layer, and the rounded corners live on the image itself. */
+        .image-viewer-container {
+            position: relative;
+            max-width: 1200px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            background-color: #ffffff;
+        }
+
+        .image-viewer-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+        }
+
+        /* Hotspot Red Rectangles */
+        .hotspot {
+            position: absolute;
+            background: rgba(239, 68, 68, 0);
+            border: 1px solid rgba(239, 68, 68, 0);
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Invisible hit area of at least 24px, centered on the hotspot,
+           so tiny hotspots are easy to tap without moving their position. */
+        .hotspot::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: max(100%, 24px);
+            height: max(100%, 24px);
+            transform: translate(-50%, -50%);
+        }
+
+        .hotspot:hover,
+        .hotspot.is-active {
+            background: rgba(239, 68, 68, 0);
+            border-color: rgba(239, 68, 68, 0);
+            /* No z-index bump: the tooltip lives in its own layer, and raising the
+               active hotspot would let its hit area steal taps from neighbours. */
+        }
+
+        .hotspot:focus {
+            outline: none;
+        }
+
+        .hotspot:focus-visible {
+            outline: 2px solid #f87171;
+            outline-offset: 2px;
+        }
+
+        /* Source tooltip text lives inside each hotspot but is never shown there. */
+        .hotspot .tooltip {
+            display: none;
+        }
+
+        /* Single shared tooltip, appended to <body>, positioned in the viewport. */
+        .shared-tooltip {
+            position: fixed;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+            max-width: calc(100vw - 16px);
+            max-height: calc(100vh - 16px);
+            overflow-x: auto;
+            overflow-y: auto;
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            white-space: pre; /* Non-wrapping, line-for-line formatting */
+            line-height: 1.5;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+            border: 1px solid #334155;
+            z-index: 2147483000;
+            visibility: hidden;
+            pointer-events: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .shared-tooltip.is-visible {
+            visibility: visible;
+        }
+
+        /* Allow scrolling a tooltip that overflows on small screens (tap mode). */
+        .shared-tooltip.is-pinned {
+            pointer-events: auto;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 16px 8px;
+            }
+
+            header {
+                margin-bottom: 16px;
+                padding: 0 4px;
+            }
+
+            h1.title {
+                font-size: clamp(1.15rem, 5vw, 1.5rem);
+            }
+
+            p.subtitle {
+                font-size: 0.85rem;
+            }
+
+            .image-viewer-container,
+            .image-viewer-container img {
+                border-radius: 6px;
+            }
+
+            .shared-tooltip {
+                font-size: 0.72rem;
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="title">Semantic Hierarchy - Correct/Optimized State</h1>
+        <p class="subtitle">Hover or tap any red tag to inspect its exact design token specifications.</p>
+    </header>
+
+    <div class="image-viewer-container" id="viewerContainer">
+        <!-- Background image source -->
+        <img src="https://static.plexusworldwide.com/image/upload/v1794430776/axvpzlt8dwryqmfwlres.png" alt="Font Use Example Specimen">
+        
+        <!-- Precision Mapped Hotspots Over Red Rectangles -->
+        
+        <!-- 1. Hero Overline -->
+        <div class="hotspot tooltip-right" style="top: 5.41%; left: 22.51%; width: 10.67%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1rem; (16px)
+line-height: 1.25rem; (20px)
+letter-spacing: 0.1875rem; (3px)
+font-weight: 800;
+text-transform: uppercase;</div>
+        </div>
+
+        <!-- 2. Hero H1 -->
+        <div class="hotspot tooltip-right" style="top: 6.72%; left: 44.21%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: "Spectral", serif;
+font-size: 2rem; (32px)
+line-height: 2rem; (32px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 400;
+text-transform: none;</div>
+        </div>
+
+        <!-- 3. Hero H3 -->
+        <div class="hotspot tooltip-right" style="top: 8.15%; left: 41.59%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1.5rem; (24px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 300;
+text-transform: none;</div>
+        </div>
+
+        <!-- 4. Product Jar Overline-sm -->
+        <div class="hotspot tooltip-right" style="top: 16.46%; left: 39.74%; width: 10.62%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 0.75rem; (12px)
+line-height: 1rem; (16px)
+letter-spacing: 0.1875rem; (3px)
+font-weight: 800;
+text-transform: uppercase;</div>
+        </div>
+
+        <!-- 5. Product Jar H4 -->
+        <div class="hotspot tooltip-right" style="top: 17.88%; left: 45.03%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1rem; (16px)
+line-height: 1.25rem; (20px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 600;
+text-transform: none;</div>
+        </div>
+
+        <!-- 10. Cardboard Box H2 -->
+        <div class="hotspot tooltip-left" style="top: 29.27%; left: 86.05%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1.75rem; (28px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 600;
+text-transform: none;</div>
+        </div>
+
+        <!-- 11. Cardboard Box H1 -->
+        <div class="hotspot tooltip-left" style="top: 31.18%; left: 82.82%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: "Spectral", serif;
+font-size: 2rem; (32px)
+line-height: 2rem; (32px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 400;
+text-transform: none;</div>
+        </div>
+
+        <!-- 12. Cardboard Box Paragraph -->
+        <div class="hotspot tooltip-left" style="top: 32.58%; left: 83.44%; width: 10.26%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1rem; (16px)
+font-weight: 300;
+line-height: 1.25rem; (20px)
+letter-spacing: 0rem; (0px)
+text-transform: none;</div>
+        </div>
+
+        <!-- 14. Dedication to Quality H2 -->
+        <div class="hotspot tooltip-left" style="top: 44.30%; left: 64.67%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1.75rem; (28px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 600;
+text-transform: none;</div>
+        </div>
+
+        <!-- 15. Dedication to Quality Paragraph -->
+        <div class="hotspot tooltip-left" style="top: 45.63%; left: 71.74%; width: 10.26%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1rem; (16px)
+font-weight: 300;
+line-height: 1.25rem; (20px)
+letter-spacing: 0rem; (0px)
+text-transform: none;</div>
+        </div>
+
+        <!-- 16. Real People H2 -->
+        <div class="hotspot tooltip-left" style="top: 54.26%; left: 67.38%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1.75rem; (28px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 600;
+text-transform: none;</div>
+        </div>
+
+        <!-- 17. Testimonial H3 (Kristy B.) -->
+        <div class="hotspot tooltip-left" style="top: 63.81%; left: 70.0%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1.5rem; (24px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 300;
+text-transform: none;</div>
+        </div>
+
+        <!-- 18. Testimonial H4 (Plexus® Reset) -->
+        <div class="hotspot tooltip-left" style="top: 65.0%; left: 72.62%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1rem; (16px)
+line-height: 1.25rem; (20px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 600;
+text-transform: none;</div>
+        </div>
+
+        <!-- 19. Testimonial Paragraph -->
+        <div class="hotspot tooltip-left" style="top: 65.77%; left: 87.03%; width: 10.26%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1rem; (16px)
+font-weight: 300;
+line-height: 1.25rem; (20px)
+letter-spacing: 0rem; (0px)
+text-transform: none;</div>
+        </div>
+
+        <!-- 21. Business Opportunity Overline-sm -->
+        <div class="hotspot tooltip-left" style="top: 74.46%; left: 65.23%; width: 11.69%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 0.75rem; (12px)
+line-height: 1rem; (16px)
+letter-spacing: 0.1875rem; (3px)
+font-weight: 800;
+text-transform: uppercase;</div>
+        </div>
+
+        <!-- 23. Business Opportunity H2 -->
+        <div class="hotspot tooltip-left" style="top: 76.40%; left: 76.97%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1.75rem; (28px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 600;
+text-transform: none;</div>
+        </div>
+
+        <!-- 24. Business Opportunity Paragraph -->
+        <div class="hotspot tooltip-left" style="top: 77.62%; left: 84.97%; width: 10.26%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1rem; (16px)
+font-weight: 300;
+line-height: 1.25rem; (20px)
+letter-spacing: 0rem; (0px)
+text-transform: none;</div>
+        </div>
+
+        <!-- 25. Footer H1 -->
+        <div class="hotspot tooltip-right" style="top: 89.10%; left: 17.90%; width: 4.36%; height: 0.92%;">
+            <div class="tooltip">font-family: 'DM Sans', sans-serif;
+font-size: 1.5rem; (24px)
+line-height: 1.75rem; (28px)
+letter-spacing: -0.0625rem; (-1px)
+font-weight: 300;
+text-transform: none;</div>
+        </div>
+
+    </div>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var MARGIN = 8;   // minimum distance from every viewport edge
+        var GAP = 10;     // distance between hotspot and tooltip
+
+        var tip = document.createElement('div');
+        tip.className = 'shared-tooltip';
+        tip.id = 'shared-tooltip';
+        tip.setAttribute('role', 'tooltip');
+        document.body.appendChild(tip);
+
+        var hotspots = Array.prototype.slice.call(document.querySelectorAll('.hotspot'));
+        var current = null;   // hotspot whose tooltip is shown
+        var pinned = false;   // shown via tap/click (stays until dismissed)
+
+        function labelFor(spot, text) {
+            // Prefer the HTML comment that names the hotspot, e.g. "<!-- 2. Hero H1 -->".
+            var node = spot.previousSibling;
+            while (node && node.nodeType !== 1) {
+                if (node.nodeType === 8) {
+                    var name = node.nodeValue.trim().replace(/^\d+\.\s*/, '');
+                    if (name) return name;
+                }
+                node = node.previousSibling;
+            }
+            return (text.split('\n')[0] || 'Design token').trim();
+        }
+
+        hotspots.forEach(function (spot) {
+            var src = spot.querySelector('.tooltip');
+            var text = src ? src.textContent : '';
+            spot._tipText = text;
+            spot.setAttribute('tabindex', '0');
+            spot.setAttribute('role', 'button');
+            spot.setAttribute('aria-label', labelFor(spot, text) + ' - design token specifications');
+            spot.setAttribute('aria-describedby', 'shared-tooltip');
+        });
+
+        function clamp(v, min, max) {
+            return Math.max(min, Math.min(v, max));
+        }
+
+        function position() {
+            if (!current) return;
+            var vw = document.documentElement.clientWidth;
+            var vh = document.documentElement.clientHeight;
+            var r = current.getBoundingClientRect();
+
+            // Reset so we measure the natural size (bounded by max-width/max-height).
+            tip.style.left = '0px';
+            tip.style.top = '0px';
+            var tw = tip.offsetWidth;
+            var th = tip.offsetHeight;
+
+            var prefer = current.classList.contains('tooltip-left') ? 'left' : 'right';
+            var fitsRight = r.right + GAP + tw <= vw - MARGIN;
+            var fitsLeft = r.left - GAP - tw >= MARGIN;
+            var side;
+            if (prefer === 'right') side = fitsRight ? 'right' : (fitsLeft ? 'left' : null);
+            else side = fitsLeft ? 'left' : (fitsRight ? 'right' : null);
+
+            var left, top;
+            if (side) {
+                left = side === 'right' ? r.right + GAP : r.left - GAP - tw;
+                top = r.top + r.height / 2 - th / 2;
+            } else {
+                // Neither side fits: go below, or above if there is more room there.
+                left = r.left + r.width / 2 - tw / 2;
+                var below = vh - r.bottom - GAP - MARGIN;
+                var above = r.top - GAP - MARGIN;
+                top = (below >= th || below >= above) ? r.bottom + GAP : r.top - GAP - th;
+            }
+
+            left = clamp(left, MARGIN, Math.max(MARGIN, vw - MARGIN - tw));
+            top = clamp(top, MARGIN, Math.max(MARGIN, vh - MARGIN - th));
+            tip.style.left = Math.round(left) + 'px';
+            tip.style.top = Math.round(top) + 'px';
+        }
+
+        function show(spot, pin) {
+            if (current && current !== spot) current.classList.remove('is-active');
+            current = spot;
+            pinned = !!pin;
+            spot.classList.add('is-active');
+            tip.textContent = spot._tipText;
+            tip.scrollLeft = 0;
+            tip.scrollTop = 0;
+            tip.classList.toggle('is-pinned', pinned);
+            tip.classList.add('is-visible');
+            position();
+        }
+
+        function hide() {
+            if (current) current.classList.remove('is-active');
+            current = null;
+            pinned = false;
+            tip.classList.remove('is-visible', 'is-pinned');
+        }
+
+        hotspots.forEach(function (spot) {
+            spot.addEventListener('mouseenter', function () {
+                if (!pinned) show(spot, false);
+            });
+            spot.addEventListener('mouseleave', function () {
+                if (!pinned && current === spot) hide();
+            });
+            spot.addEventListener('focus', function () {
+                if (!pinned || current !== spot) show(spot, false);
+            });
+            spot.addEventListener('blur', function () {
+                if (!pinned && current === spot) hide();
+            });
+            spot.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (pinned && current === spot) hide();
+                else show(spot, true);
+            });
+            spot.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (pinned && current === spot) hide();
+                    else show(spot, true);
+                }
+            });
+        });
+
+        // Tap/click outside a hotspot (and outside the tooltip) dismisses it.
+        document.addEventListener('click', function (e) {
+            if (!current) return;
+            if (tip.contains(e.target)) return;
+            if (e.target.closest && e.target.closest('.hotspot')) return;
+            hide();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' || e.key === 'Esc') hide();
+        });
+
+        window.addEventListener('scroll', position, { passive: true });
+        window.addEventListener('resize', position);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', position);
+            window.visualViewport.addEventListener('scroll', position);
+        }
+    })();
+    </script>
+
+</body>
+</html>
