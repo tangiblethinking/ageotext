@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
         if (result.text) {
           return NextResponse.json({
             answer: result.text,
-            sources: chunks.map((c) => ({ heading: c.heading, section: c.section })),
+            sources: chunks.map((c) => ({ heading: c.heading, section: c.section, id: c.id })),
             modelUsed: result.model,
           });
         }
