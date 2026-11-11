@@ -19,7 +19,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { isPlausibleApiKey, saveApiKey, readStoredApiKey } from "@/lib/api-key-store";
 
 type Step = "welcome" | "tip" | "haveKey" | "step1" | "step2" | "step3" | "step4" | "step5" | "step6" | "step7" | "step8" | "pasteNow" | "done" | "dismissed";
-type Message = { id: string; from: "bot" | "user"; text: string; sources?: { heading: string; section: string }[]; };
+type Message = { id: string; from: "bot" | "user"; text: string; sources?: { heading: string; section: string; id: string }[]; };
 
 const TEXTS: Record<string, string> = {
   welcome: "Hi There — I’m here to help you get set up. To use the power of AI you'll need a key (if you have a google/gmail account you already have this). It only takes a couple of minutes, and the key stays with you. I'll never see it. Ready to start?",
@@ -108,7 +108,7 @@ export default function SupportBot() {
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, thinking, isOpen]);
 
-  function pushBot(text: string, sources?: { heading: string; section: string }[]) {
+  function pushBot(text: string, sources?: { heading: string; section: string; id: string }[]) {
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), from: "bot", text, sources }]);
   }
   function pushUser(text: string) {
@@ -168,6 +168,14 @@ export default function SupportBot() {
       setTimeout(() => setCopiedId((cur) => (cur === id ? null : cur)), 1400);
     });
   }
+  function handleSourceClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    el.classList.add("source-highlight");
+    setTimeout(() => el.classList.remove("source-highlight"), 2000);
+  }
   function renderText(text: string) {
     const url = "https://aistudio.google.com/api-keys";
     if (!text.includes(url)) return renderMarkdown(text);
@@ -193,7 +201,7 @@ export default function SupportBot() {
       width: isExpanded ? "min(100vw - 2rem, 384px)" : { xs: "calc(100vw - 2rem)", sm: 384 },
       height: isExpanded ? "calc(100dvh - 2rem)" : "min(520px, calc(100dvh - 2rem))",
       display: "flex", flexDirection: "column", borderRadius: "16px", overflow: "hidden",
-      bgcolor: "#f7f4ee", color: "#1c1b18", border: "1px solid #ddd6c8"
+      bgcolor: "#f8fafc", color: "#1c1b18", border: "1px solid #ddd6c8"
     }}>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 1.5, py: 1, bgcolor: "#000", color: "#fff", flexShrink: 0 }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
@@ -209,22 +217,42 @@ export default function SupportBot() {
           <IconButton size="small" onClick={() => setMode("closed")} aria-label="Minimize" sx={{ color: "#fff" }}><CloseIcon fontSize="small" /></IconButton>
         </Box>
       </Box>
-      <Box sx={{ flex: 1, overflowY: "auto", p: 1.5, bgcolor: "#f7f4ee" }}>
+      <Box sx={{ flex: 1, overflowY: "auto", p: 1.5, bgcolor: "#f8fafc" }}>
         {messages.map((msg) => (
           <Box key={msg.id} sx={{ display: "flex", justifyContent: msg.from === "user" ? "flex-end" : "flex-start", mb: 1.25 }}>
             <Paper elevation={0} sx={{ maxWidth: "88%", p: 1.5, borderRadius: "16px", bgcolor: msg.from === "user" ? "#1c1b18" : "#f0ebe3", color: msg.from === "user" ? "#f7f4ee" : "#1c1b18", position: "relative", whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: "0.875rem", lineHeight: 1.5 }}>
-              {msg.from === "bot" && <IconButton size="small" onClick={() => copyText(msg.id, msg.text)} sx={{ position: "absolute", top: 4, right: 4, bgcolor: "rgba(0,0,0,0.05)", color: "inherit", width: 24, height: 24 }} aria-label="Copy">{copiedId === msg.id ? <CheckIcon sx={{ fontSize: 14 }} /> : <ContentCopyIcon sx={{ fontSize: 14 }} />}</IconButton>}
+              {msg.from === "bot" && <IconButton size="small" onClick={() => copyText(msg.id, msg.text)} sx={{ position: "sticky", top: 4, right: 4, float: "right", bgcolor: "rgba(0,0,0,0.05)", color: "inherit", width: 24, height: 24, zIndex: 1 }} aria-label="Copy">{copiedId === msg.id ? <CheckIcon sx={{ fontSize: 14 }} /> : <ContentCopyIcon sx={{ fontSize: 14 }} />}</IconButton>}
               <Box component="div" sx={{ pr: msg.from === "bot" ? 2.5 : 0 }}>{renderText(msg.text)}</Box>
-              {msg.sources && msg.sources.length > 0 && <Typography variant="caption" sx={{ display: "block", mt: 1, opacity: 0.65, fontSize: "0.7rem" }}>Sources: {msg.sources.map((s) => s.heading).join(" · ")}</Typography>}
+              {msg.sources && msg.sources.length > 0 && (
+                <Typography variant="caption" sx={{ display: "block", mt: 1, fontSize: "0.7rem", clear: "both" }}>
+                  Sources: {msg.sources.map((s, i) => (
+                    <span key={s.id}>
+                      {i > 0 && " • "}
+                      <a href={`#${s.id}`} onClick={(e) => handleSourceClick(e, s.id)} style={{ color: "#5b7c99", textDecoration: "underline", cursor: "pointer" }}>{s.heading}</a>
+                    </span>
+                  ))}
+                </Typography>
+              )}
             </Paper>
           </Box>
         ))}
         {thinking && <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 1.25 }}><Paper elevation={0} sx={{ p: 1.5, borderRadius: "16px", bgcolor: "#f0ebe3", display: "flex", gap: 0.5 }}>{[0, 0.16, 0.32].map((delay) => <Box key={delay} sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: "#6b6560", animation: "bounce 1.4s infinite ease-in-out both", animationDelay: `${delay}s` }} />)}</Paper></Box>}
         <div ref={endRef} />
       </Box>
-      {showButtons && <Box sx={{ px: 1.5, pb: 1, display: "flex", flexWrap: "wrap", gap: 1, bgcolor: "#f7f4ee" }}>{current.buttons!.map((b) => <Button key={b.label} variant="outlined" size="small" onClick={() => handleButton(b.next, b.label)} endIcon={<ChevronRightIcon sx={{ fontSize: 16 }} />} sx={{ borderRadius: "20px", borderColor: "#ddd6c8", color: "#1c1b18", textTransform: "none", fontSize: "0.8rem", px: 1.5, py: 0.5, "&:hover": { borderColor: "#1c1b18", bgcolor: "rgba(0,0,0,0.02)" } }}>{b.label}</Button>)}</Box>}
-      {showInput && <Box sx={{ p: 1.5, borderTop: "1px solid #ddd6c8", bgcolor: "#f7f4ee" }}><Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}><TextField fullWidth multiline maxRows={4} value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSend(); } }} placeholder={hasKey ? "Ask about AEO/GEO..." : "Paste your Gemini key here…"} size="small" disabled={thinking} sx={{ "& .MuiOutlinedInput-root": { bgcolor: "#fff", borderRadius: "12px", "& fieldset": { borderColor: "#ddd6c8" }, "&:hover fieldset": { borderColor: "#c5c0b6" } }, "& .MuiInputBase-input": { fontSize: "0.875rem" } }} /><IconButton onClick={onSend} disabled={thinking || !draft.trim()} sx={{ bgcolor: "#1c1b18", color: "#f7f4ee", width: 40, height: 40, "&:hover": { bgcolor: "#2c2a24" }, "&.Mui-disabled": { bgcolor: "#e4dfd4", color: "#a8a196" } }} aria-label="Send"><CheckIcon fontSize="small" /></IconButton></Box></Box>}
-      <style>{`@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }`}</style>
+      {showButtons && <Box sx={{ px: 1.5, pb: 1, display: "flex", flexWrap: "wrap", gap: 1, bgcolor: "#f8fafc" }}>{current.buttons!.map((b) => <Button key={b.label} variant="outlined" size="small" onClick={() => handleButton(b.next, b.label)} endIcon={<ChevronRightIcon sx={{ fontSize: 16 }} />} sx={{ borderRadius: "20px", borderColor: "#ddd6c8", color: "#1c1b18", textTransform: "none", fontSize: "0.8rem", px: 1.5, py: 0.5, "&:hover": { borderColor: "#1c1b18", bgcolor: "rgba(0,0,0,0.02)" } }}>{b.label}</Button>)}</Box>}
+      {showInput && <Box sx={{ p: 1.5, borderTop: "1px solid #ddd6c8", bgcolor: "#f8fafc" }}><Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}><TextField fullWidth multiline maxRows={4} value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSend(); } }} placeholder={hasKey ? "Ask about AEO/GEO..." : "Paste your Gemini key here…"} size="small" disabled={thinking} sx={{ "& .MuiOutlinedInput-root": { bgcolor: "#fff", borderRadius: "12px", "& fieldset": { borderColor: "#ddd6c8" }, "&:hover fieldset": { borderColor: "#c5c0b6" } }, "& .MuiInputBase-input": { fontSize: "0.875rem" } }} /><IconButton onClick={onSend} disabled={thinking || !draft.trim()} sx={{ bgcolor: "#1c1b18", color: "#f7f4ee", width: 40, height: 40, "&:hover": { bgcolor: "#2c2a24" }, "&.Mui-disabled": { bgcolor: "#e4dfd4", color: "#a8a196" } }} aria-label="Send"><CheckIcon fontSize="small" /></IconButton></Box></Box>}
+      <style>{`
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+        .source-highlight {
+          animation: sourceHighlight 2s ease-in-out;
+        }
+        @keyframes sourceHighlight {
+          0% { background-color: transparent; }
+          25% { background-color: rgba(91, 124, 153, 0.25); }
+          75% { background-color: rgba(91, 124, 153, 0.25); }
+          100% { background-color: transparent; }
+        }
+      `}</style>
     </Paper>
   );
 }
