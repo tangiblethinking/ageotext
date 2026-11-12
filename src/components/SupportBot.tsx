@@ -23,6 +23,7 @@ import { isPlausibleApiKey, saveApiKey, readStoredApiKey } from "@/lib/api-key-s
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { LANGUAGES, type LanguageCode } from "@/lib/i18n/languages";
 import type { TranslationKey } from "@/lib/i18n/translations";
+import { scrollToGuideTarget } from "@/lib/highlight";
 
 type Step = "language" | "welcome" | "tip" | "haveKey" | "step1" | "step2" | "step3" | "step4" | "step5" | "step6" | "step7" | "step8" | "pasteNow" | "done" | "dismissed";
 
@@ -273,11 +274,7 @@ export default function SupportBot() {
   }
   function handleSourceClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
     e.preventDefault();
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-    el.classList.add("source-highlight");
-    setTimeout(() => el.classList.remove("source-highlight"), 2000);
+    scrollToGuideTarget(id);
   }
   function renderText(text: string) {
     if (!text.includes(AI_STUDIO_URL)) return renderMarkdown(text);
@@ -474,15 +471,6 @@ export default function SupportBot() {
       {showInput && <Box sx={{ p: 1.5, borderTop: "1px solid #ddd6c8", bgcolor: "#f8fafc" }}><Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}><TextField fullWidth multiline maxRows={4} value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSend(); } }} placeholder={hasKey ? t("askAboutPlaceholder") : t("pasteKeyPlaceholder")} size="small" disabled={thinking} sx={{ "& .MuiOutlinedInput-root": { bgcolor: "#fff", borderRadius: "12px", "& fieldset": { borderColor: "#ddd6c8" }, "&:hover fieldset": { borderColor: "#c5c0b6" } }, "& .MuiInputBase-input": { fontSize: "0.875rem" } }} /><IconButton onClick={onSend} disabled={thinking || !draft.trim()} sx={{ bgcolor: "#1c1b18", color: "#f7f4ee", width: 40, height: 40, "&:hover": { bgcolor: "#2c2a24" }, "&.Mui-disabled": { bgcolor: "#e4dfd4", color: "#a8a196" } }} aria-label={t("send")}><CheckIcon fontSize="small" /></IconButton></Box></Box>}
       <style>{`
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-        .source-highlight {
-          animation: sourceHighlight 2s ease-in-out;
-        }
-        @keyframes sourceHighlight {
-          0% { background-color: transparent; }
-          25% { background-color: rgba(91, 124, 153, 0.25); }
-          75% { background-color: rgba(91, 124, 153, 0.25); }
-          100% { background-color: transparent; }
-        }
       `}</style>
     </Paper>
     {viewer}

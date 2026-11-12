@@ -4,10 +4,10 @@
 
         <!-- Section 1 -->
         <span class="section-eyebrow text-overline">Foundation</span>
-        <h2 class="text-h2">1. Understanding AEO/GEO &amp; Semantic Architecture</h2>
+        <h2 id="understanding" class="text-h2 toc-target">1. Understanding AEO/GEO &amp; Semantic Architecture</h2>
         
         <ul>
-            <li id="hierarchy" class="text-body">
+            <li id="hierarchy" class="text-body toc-target">
                 <strong>Structural Hierarchy Over Visual Styling:</strong> AI search engines parse web pages based entirely on structural DOM (Document Object Model) hierarchy (<code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code>). They ignore CSS visual sizing (px, rem).
             </li>
         </ul>
@@ -16,7 +16,7 @@
         </div>
 
         <ul>
-            <li id="span-resolution" class="text-body">
+            <li id="span-resolution" class="text-body toc-target">
                 <strong>The <code>&lt;span&gt;</code> Resolution for Non-Optimal Sizing:</strong> In order to follow AEO/GEO optimization, the hierarchy document needs to be updated for <code>&lt;span&gt;</code> use. Specifically, in the use case of using a lower size H style before a larger H tag (e.g., placing an H4 visual style before an H1, or jumping levels out of linear sequence), this would not be optimal for AEO and GEO.
             </li>
         </ul>
@@ -25,7 +25,7 @@
         </div>
 
         <ul>
-            <li id="semantic-maps" class="text-body">
+            <li id="semantic-maps" class="text-body toc-target">
                 <strong>Distinct Semantic Maps:</strong> AI crawlers construct precise entity graphs to understand what products/topics are and why users should buy or trust them. Product Listing Pages (PLPs), Product Detail Pages (PDPs), and Editorial/Landing Pages represent three distinct semantic maps that require tailored heading structures.
             </li>
         </ul>
@@ -34,7 +34,7 @@
         </div>
 
         <ul>
-            <li id="linear-hierarchy" class="text-body">
+            <li id="linear-hierarchy" class="text-body toc-target">
                 <strong>Core Optimization Rule:</strong> AI models optimize for computational efficiency. Skipping structural levels (e.g., jumping from <code>&lt;h1&gt;</code> directly to <code>&lt;h3&gt;</code> for visual layout) breaks the semantic path and degrades graph clarity. Maintain a strict, linear hierarchy (<code>&lt;h1&gt;</code> → <code>&lt;h2&gt;</code> → <code>&lt;h3&gt;</code> → <code>&lt;h4&gt;</code> → <code>&lt;h5&gt;</code> → <code>&lt;h6&gt;</code>).
             </li>
         </ul>
@@ -43,7 +43,7 @@
         </div>
 
         <ul>
-            <li id="rag-pairing" class="text-body">
+            <li id="rag-pairing" class="text-body toc-target">
                 <strong>Heading-to-Paragraph RAG Pairing:</strong> Headings act as query triggers; paragraph (<code>&lt;p&gt;</code>) tags provide the actual answer payload. Every heading tag must be immediately followed by a high-density answer block in a <code>&lt;p&gt;</code> tag (a 40–60 word summary), a bulleted list, or a structured table to maximize extraction into AI search answers.
             </li>
         </ul>
@@ -53,11 +53,11 @@
 
         <!-- Section 2 -->
         <span class="section-eyebrow text-overline">Design System Token Mapping</span>
-        <h2 id="tokens" class="text-h2">2. Typography Tokens &amp; Strategic Roles</h2>
+        <h2 id="tokens" class="text-h2 toc-target">2. Typography Tokens &amp; Strategic Roles</h2>
         
         <p class="text-subtitle">Complete mapping of all existing typography design tokens mapped to their AEO/GEO semantic implementation rules:</p>
 
-        <div class="token-card">
+        <div id="token-h1" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-h1</span>
                 <strong>Heading 1 (Display / Hero)</strong>
@@ -66,7 +66,7 @@
             <p class="text-caption"><strong>Semantic Role (&lt;h1&gt; - Entity Scope Level):</strong> Exactly one per page. Establishes the overarching semantic entity, broad commercial context, or topic theme.</p>
         </div>
 
-        <div class="token-card">
+        <div id="token-h2" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-h2</span>
                 <strong>Heading 2</strong>
@@ -75,7 +75,7 @@
             <p class="text-caption"><strong>Semantic Role (&lt;h2&gt; - Primary Query Trigger Level):</strong> Most critical tag for AEO extraction. Framed as explicit conversational questions or high-intent descriptive statements.</p>
         </div>
 
-        <div class="token-card">
+        <div id="token-h3" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-h3</span>
                 <strong>Heading 3</strong>
@@ -84,7 +84,7 @@
             <p class="text-caption"><strong>Semantic Role (&lt;h3&gt; - Entity Chunk Level):</strong> Breaks down complex concepts, feature categories, or step-by-step sub-topics under an &lt;h2&gt;.</p>
         </div>
 
-        <div class="token-card">
+        <div id="token-subheading" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-subheading</span>
                 <strong>Subheading (Persisted H7 Style)</strong>
@@ -93,7 +93,7 @@
             <p class="text-caption"><strong>Non-Heading Span / Tag Role:</strong> Used for subheadings needing visual emphasis. Use via <code>&lt;span class="text-subheading"&gt;</code> or appropriate structural tag without breaking DOM hierarchy.</p>
         </div>
 
-        <div class="token-card">
+        <div id="token-h4" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-h4</span>
                 <strong>Heading 4</strong>
@@ -102,7 +102,7 @@
             <p class="text-caption"><strong>Semantic Role (&lt;h4&gt; - Detail Level) / Span Role:</strong> Categorizes dense technical breakdowns or ingredient attributes under an &lt;h3&gt;. Alternatively applied via <code>&lt;span class="text-h4"&gt;</code> when smaller styling is required before an &lt;h1&gt;.</p>
         </div>
 
-        <div class="token-card">
+        <div id="token-h6" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-h6</span>
                 <strong>Heading 6</strong>
@@ -111,7 +111,7 @@
             <p class="text-caption"><strong>Semantic Role (&lt;h6&gt; - Granular Level):</strong> Reserved for deep technical attributes in nested structures. Never used as a visual shortcut for small font sizes.</p>
         </div>
 
-        <div class="token-card">
+        <div id="token-subtitle" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-subtitle</span>
                 <strong>True Subtitle</strong>
@@ -120,7 +120,7 @@
             <p class="text-caption"><strong>Non-Heading Element:</strong> Scaled down for subtext directly under H1/H2 headings. Applied via <code>&lt;p class="text-subtitle"&gt;</code> or <code>&lt;span class="text-subtitle"&gt;</code>.</p>
         </div>
 
-        <div class="token-card">
+        <div id="token-overline-lg" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-overline-lg</span>
                 <strong>Large Overline / Eyebrow (H5 Style)</strong>
@@ -129,7 +129,7 @@
             <p class="text-caption"><strong>Eyebrow / Overline Tag:</strong> Major section eyebrow. Must be styled with <code>&lt;span class="text-overline-lg"&gt;</code> to prevent invalidating DOM graph clarity when positioned above an &lt;h1&gt; or &lt;h2&gt;.</p>
         </div>
 
-        <div class="token-card">
+        <div id="token-overline" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-overline</span>
                 <strong>Small Overline / Eyebrow (H8 Style)</strong>
@@ -138,7 +138,7 @@
             <p class="text-caption"><strong>Micro Eyebrow Tag:</strong> Compact category overlines. Applied via <code>&lt;span class="text-overline"&gt;</code> above primary section titles.</p>
         </div>
 
-        <div class="token-card">
+        <div id="token-body" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-body</span>
                 <strong>Body Paragraph</strong>
@@ -147,7 +147,7 @@
             <p class="text-caption"><strong>RAG Payload Level (&lt;p&gt;):</strong> Primary declarative knowledge layer providing the 40–60 word answer payloads immediately following headings.</p>
         </div>
 
-        <div class="token-card">
+        <div id="token-caption" class="token-card toc-target">
             <div class="token-header">
                 <span class="token-tag">.text-caption</span>
                 <strong>UI Caption / Helper Text</strong>
@@ -158,9 +158,9 @@
 
         <!-- Section 3 -->
         <span class="section-eyebrow text-overline">Implementation</span>
-        <h2 class="text-h2">3. Page-Specific Semantic Structures</h2>
+        <h2 id="structures" class="text-h2 toc-target">3. Page-Specific Semantic Structures</h2>
 
-        <h3 id="plp" class="text-subheading">A. The Product Listing Page (PLP) Structure</h3>
+        <h3 id="plp" class="text-subheading toc-target">A. The Product Listing Page (PLP) Structure</h3>
         <p class="text-subtitle">Establishes catalog breadth and category domain authority.</p>
         <ul>
             <li class="text-body"><strong>&lt;h1&gt;:</strong> Category Name only. Exactly one per page.<br>
@@ -175,7 +175,7 @@
             <li class="text-body"><strong>Grid Items (Product Cards):</strong> Wrap individual product card titles in clean anchor (<code>&lt;a&gt;</code>) or <code>&lt;div&gt;</code> tags paired with backend JSON-LD ItemList and Product schema. Use <code>&lt;span class="text-h4"&gt;</code> or <code>&lt;span class="text-subheading"&gt;</code> for visual styling to avoid repeating dozens of <code>&lt;h3&gt;</code> tags in the DOM.</li>
         </ul>
 
-        <h3 id="pdp" class="text-subheading">B. The Product Detail Page (PDP) Structure</h3>
+        <h3 id="pdp" class="text-subheading toc-target">B. The Product Detail Page (PDP) Structure</h3>
         <p class="text-subtitle">Feeds AI engines product specs, active ingredients, clinical proof, and purchase intent data.</p>
         <ul>
             <li class="text-body"><strong>&lt;h1&gt;:</strong> Full exact product title.<br>
@@ -204,7 +204,7 @@
             <li class="text-body"><strong>Boilerplate &amp; Fine Print:</strong> Use non-heading markup (<code>&lt;p class="disclaimer text-caption"&gt;</code> or <code>&lt;span class="text-caption"&gt;</code>) for legal disclosures, FDA disclaimers, and footers to keep non-semantic text out of heading maps.</li>
         </ul>
 
-        <h3 id="editorial" class="text-subheading">C. Copy-Heavy Landing Pages &amp; Editorial Content</h3>
+        <h3 id="editorial" class="text-subheading toc-target">C. Copy-Heavy Landing Pages &amp; Editorial Content</h3>
         <p class="text-subtitle">Maps user health problems to commercial solutions. Primary source for GEO citations.</p>
         <ul>
             <li class="text-body"><strong>&lt;h1&gt;:</strong> Editorial title containing the target entity or core topic.<br>
@@ -224,7 +224,7 @@
 
         <!-- Section 4 -->
         <span class="section-eyebrow text-overline">Refactoring Matrix</span>
-        <h2 id="matrix" class="text-h2">4. Comprehensive E-Commerce Refactor Matrix</h2>
+        <h2 id="matrix" class="text-h2 toc-target">4. Comprehensive E-Commerce Refactor Matrix</h2>
         <table>
             <thead>
                 <tr>
@@ -235,49 +235,49 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <tr id="matrix-body" class="toc-target">
                     <td class="text-body"><strong>Body Content (&lt;p&gt;)</strong></td>
                     <td class="text-body">Treated as plain visual body text.</td>
                     <td class="text-body">Formatted as precise RAG answer payloads (<code>.text-body</code>) immediately following H tags.</td>
                     <td class="text-caption">Direct 40–60 word paragraph summaries beneath <code>&lt;h2&gt;</code> tags for direct AI Overview extraction.</td>
                 </tr>
-                <tr>
+                <tr id="matrix-grid" class="toc-target">
                     <td class="text-body"><strong>Grid Item Names (PLP)</strong></td>
                     <td class="text-body">Wrapped in <code>&lt;div&gt;</code>, <code>&lt;span&gt;</code>, or repeating <code>&lt;h3&gt;</code> tags across 30+ items.</td>
                     <td class="text-body">HTML: Clean <code>&lt;a&gt;</code> or <code>&lt;div&gt;</code> tags with design tokens (e.g., <code>&lt;span class="text-h4"&gt;</code>).<br><br>Schema: Standardized ItemList JSON-LD markup.</td>
                     <td class="text-caption">Links items like Plexus Active® and Plexus Reset® as child entities without fragmenting DOM heading trees or breaking screen-reader accessibility.</td>
                 </tr>
-                <tr>
+                <tr id="matrix-add-to-cart" class="toc-target">
                     <td class="text-body"><strong>"Add to Cart" / Price</strong></td>
                     <td class="text-body">Frequently given an <code>&lt;h4&gt;</code> tag for quick visual styling via CSS.</td>
                     <td class="text-body">Non-heading elements only (<code>&lt;div&gt;</code> or <code>&lt;span class="text-subheading"&gt;</code>).</td>
                     <td class="text-caption">Prevents tags like <code>&lt;span class="text-h4"&gt;$89.95 VIP Price&lt;/span&gt;</code> from polluting entity extraction graphs with transactional text.</td>
                 </tr>
-                <tr>
+                <tr id="matrix-out-of-order" class="toc-target">
                     <td class="text-body"><strong>Out-of-Order Visual Headings</strong></td>
                     <td class="text-body">Using smaller heading tags (<code>&lt;h4&gt;</code>) before larger ones (<code>&lt;h1&gt;</code>) for layout styling.</td>
                     <td class="text-body"><strong><code>&lt;span&gt;</code> Resolution:</strong> Use <code>&lt;span class="text-h4"&gt;</code> or <code>&lt;span class="text-overline"&gt;</code>.</td>
                     <td class="text-caption">Preserves strict linear DOM hierarchy (<code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code>) for AEO/GEO without disrupting designer visual intent.</td>
                 </tr>
-                <tr>
+                <tr id="matrix-deep-specs" class="toc-target">
                     <td class="text-body"><strong>Deep Specs (&lt;h5&gt;/&lt;h6&gt;)</strong></td>
                     <td class="text-body">Avoided entirely or used randomly for small text styling.</td>
                     <td class="text-body">Strictly reserved for 5th and 6th level nested technical details.</td>
                     <td class="text-caption">Maps micro-attributes (e.g., active compound ratios or strain CFU counts) without polluting primary H1–H3 entity graphs.</td>
                 </tr>
-                <tr>
+                <tr id="matrix-cross-sells" class="toc-target">
                     <td class="text-body"><strong>Cross-Sells ("Works Well With")</strong></td>
                     <td class="text-body">Hidden in untagged containers or semantic dead-zones.</td>
                     <td class="text-body">Wrapped in an <code>&lt;h2&gt;</code> or <code>&lt;h3&gt;</code> tag depending on parent level.</td>
                     <td class="text-caption">A PDP for ProBio 5 uses <code>&lt;h2 class="text-h2"&gt;Recommended Products for the Tri-Plex System&lt;/h2&gt;</code> followed by <code>&lt;h3 class="text-h3"&gt;Bio Cleanse®&lt;/h3&gt;</code> to build product affinity graphs.</td>
                 </tr>
-                <tr>
+                <tr id="matrix-sidebar" class="toc-target">
                     <td class="text-body"><strong>Sidebar &amp; Footers</strong></td>
                     <td class="text-body">Left as generic <code>&lt;h3&gt;</code> or <code>&lt;h4&gt;</code> tags.</td>
                     <td class="text-body">Completely stripped of H-tags; styled using CSS classes (e.g., <code>&lt;span class="text-h4"&gt;</code>).</td>
                     <td class="text-caption">Removes <code>Brand Ambassador Sign-In</code> or <code>Join Plexus</code> from the hierarchy so AI focuses strictly on main entity content.</td>
                 </tr>
-                <tr>
+                <tr id="matrix-disclaimers" class="toc-target">
                     <td class="text-body"><strong>Disclaimers &amp; Disclosures</strong></td>
                     <td class="text-body">Assigned <code>&lt;h4&gt;</code> tags at section bottoms.</td>
                     <td class="text-body">Plain text elements (<code>&lt;p class="text-caption"&gt;</code> or <code>&lt;div&gt;</code>).</td>
@@ -288,10 +288,10 @@
 
         <!-- Section 5 -->
         <span class="section-eyebrow text-overline">Consensus &amp; Authority</span>
-        <h2 id="consensus" class="text-h2">5. Off-Page Entity Consensus (The GEO Authority Layer)</h2>
+        <h2 id="consensus" class="text-h2 toc-target">5. Off-Page Entity Consensus (The GEO Authority Layer)</h2>
         <p class="text-subtitle">On-page HTML hierarchy structures content for crawlers, but LLMs validate citations through cross-source entity consensus.</p>
         <ol>
-            <li class="text-body"><strong>Cross-Platform Consistency:</strong> Ensure product names, active ingredients, primary benefits, and clinical claims are stated identically across your domain, press releases, social channels, and third-party vendor listings.</li>
-            <li class="text-body"><strong>Third-Party Corroboration:</strong> Generative engines cross-reference on-page claims against external web consensus (PubMed, scientific journals, independent review sites, health publications, and online forums). Maintain active external digital PR to reinforce the entity relationships built into your HTML markup.</li>
+            <li id="cross-platform" class="text-body toc-target"><strong>Cross-Platform Consistency:</strong> Ensure product names, active ingredients, primary benefits, and clinical claims are stated identically across your domain, press releases, social channels, and third-party vendor listings.</li>
+            <li id="third-party" class="text-body toc-target"><strong>Third-Party Corroboration:</strong> Generative engines cross-reference on-page claims against external web consensus (PubMed, scientific journals, independent review sites, health publications, and online forums). Maintain active external digital PR to reinforce the entity relationships built into your HTML markup.</li>
         </ol>
     </div>

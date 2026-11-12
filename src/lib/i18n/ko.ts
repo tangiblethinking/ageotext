@@ -82,4 +82,8 @@ export const ko: Record<TranslationKey, string> = {
   closeImageViewer: "이미지 뷰어 닫기",
   enlargeImage: "스크린샷 확대",
   screenshotAlt: "Google AI Studio 스크린샷",
+  // Table of contents (sheet chrome only; entry labels stay English)
+  tableOfContents: "목차",
+  openTableOfContents: "목차 열기",
+  closeTableOfContents: "목차 닫기",
 };

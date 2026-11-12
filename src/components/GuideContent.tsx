@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { GUIDE_MOUNTED_EVENT } from "@/lib/highlight";
 
 export default function GuideContent() {
   const [html, setHtml] = useState("");
@@ -15,6 +16,11 @@ export default function GuideContent() {
       setCss(style);
     });
   }, []);
+
+  // Tell the table of contents the guide targets are in the DOM so scroll-spy can attach.
+  useEffect(() => {
+    if (html) window.dispatchEvent(new Event(GUIDE_MOUNTED_EVENT));
+  }, [html]);
 
   if (!html) return null;
 

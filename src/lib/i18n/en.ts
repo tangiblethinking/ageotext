@@ -80,6 +80,10 @@ export const en = {
   closeImageViewer: "Close image viewer",
   enlargeImage: "Enlarge screenshot",
   screenshotAlt: "Google AI Studio screenshot",
+  // Table of contents (sheet chrome only; entry labels stay English)
+  tableOfContents: "Table of contents",
+  openTableOfContents: "Open table of contents",
+  closeTableOfContents: "Close table of contents",
 } as const;
 
 export type TranslationKey = keyof typeof en;

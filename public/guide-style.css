@@ -264,10 +264,9 @@
             font-weight: 600;
         }
 
-/* Source anchor scroll offset for the sticky NavBar */
-#hierarchy, #span-resolution, #semantic-maps, #linear-hierarchy, #rag-pairing,
-#tokens, #plp, #pdp, #editorial, #matrix, #consensus {
-  scroll-margin-top: 72px;
+/* Anchor targets (chat Sources + table of contents) land below the sticky NavBar */
+.toc-target {
+  scroll-margin-top: calc(var(--nav-height, 56px) + 16px);
 }
 
 /* Keep wide tables from widening the page on phones (which would push the

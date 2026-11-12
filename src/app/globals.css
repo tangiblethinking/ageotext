@@ -8,3 +8,14 @@ body {
 body.design-overlay-open {
   overflow: hidden;
 }
+
+/* Flash on a guide target after a chat Source or table-of-contents jump (src/lib/highlight.ts). */
+.guide-highlight {
+  animation: guideHighlight 2s ease-in-out;
+}
+@keyframes guideHighlight {
+  0% { background-color: transparent; }
+  25% { background-color: #FFC166; }
+  75% { background-color: #FFC166; }
+  100% { background-color: transparent; }
+}

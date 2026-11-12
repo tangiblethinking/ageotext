@@ -82,4 +82,8 @@ export const th: Record<TranslationKey, string> = {
   closeImageViewer: "ปิดตัวดูรูปภาพ",
   enlargeImage: "ขยายภาพหน้าจอ",
   screenshotAlt: "ภาพหน้าจอของ Google AI Studio",
+  // Table of contents (sheet chrome only; entry labels stay English)
+  tableOfContents: "สารบัญ",
+  openTableOfContents: "เปิดสารบัญ",
+  closeTableOfContents: "ปิดสารบัญ",
 };

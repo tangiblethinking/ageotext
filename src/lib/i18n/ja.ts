@@ -82,4 +82,8 @@ export const ja: Record<TranslationKey, string> = {
   closeImageViewer: "画像ビューアーを閉じる",
   enlargeImage: "スクリーンショットを拡大",
   screenshotAlt: "Google AI Studio のスクリーンショット",
+  // Table of contents (sheet chrome only; entry labels stay English)
+  tableOfContents: "目次",
+  openTableOfContents: "目次を開く",
+  closeTableOfContents: "目次を閉じる",
 };

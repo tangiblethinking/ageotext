@@ -82,4 +82,8 @@ export const pt: Record<TranslationKey, string> = {
   closeImageViewer: "Fechar visualizador de imagens",
   enlargeImage: "Ampliar captura de tela",
   screenshotAlt: "Captura de tela do Google AI Studio",
+  // Table of contents (sheet chrome only; entry labels stay English)
+  tableOfContents: "Índice",
+  openTableOfContents: "Abrir índice",
+  closeTableOfContents: "Fechar índice",
 };

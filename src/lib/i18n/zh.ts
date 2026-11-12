@@ -82,4 +82,8 @@ export const zh: Record<TranslationKey, string> = {
   closeImageViewer: "关闭图片查看器",
   enlargeImage: "放大截图",
   screenshotAlt: "Google AI Studio 截图",
+  // Table of contents (sheet chrome only; entry labels stay English)
+  tableOfContents: "目录",
+  openTableOfContents: "打开目录",
+  closeTableOfContents: "关闭目录",
 };
