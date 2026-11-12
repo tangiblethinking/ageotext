@@ -1,4 +1,6 @@
-// Full content chunks from the AEO/GEO guide for RAG.
+// Summary chunks of the AEO/GEO guide: section ids, labels, and short text used for source links.
+import { tokenize } from "./guide-text";
+
 export interface ContentChunk {
   id: string;
   section: string;
@@ -99,13 +101,18 @@ export const contentChunks: ContentChunk[] = [
   },
 ];
 
+/**
+ * Keyword match over the summary chunks. Short tokens such as "h1".."h6" and "p"
+ * count (they used to be dropped). The chat route now answers from the full
+ * guide in public/guide-body.html; this remains for simple lookups.
+ */
 export function retrieveRelevantChunks(query: string, topK = 6): ContentChunk[] {
-  const q = query.toLowerCase();
+  const terms = tokenize(query);
   const scored = contentChunks.map((c) => {
-    let score = 0;
     const hay = (c.heading + " " + c.text + " " + c.keywords.join(" ")).toLowerCase();
-    q.split(/\s+/).forEach((w) => {
-      if (w.length > 2 && hay.includes(w)) score += 2;
+    let score = 0;
+    terms.forEach((w) => {
+      if (hay.includes(w)) score += 2;
     });
     return { c, score };
   });

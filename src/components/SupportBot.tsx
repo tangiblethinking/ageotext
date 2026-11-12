@@ -38,7 +38,12 @@ type Message = {
   images?: StepImage[];
   isLanguageSelect?: boolean;
   sources?: Source[];
+  /** Part of the live Q&A (sent as history to /api/chat); scripted walkthrough lines are not. */
+  chat?: boolean;
 };
+
+/** How many earlier live Q&A turns go with each /api/chat request. */
+const CHAT_HISTORY_TURNS = 8;
 
 const IMG = "/support/api-key";
 const STEP_IMAGES: Partial<Record<Step, StepImage[]>> = {
@@ -222,7 +227,7 @@ export default function SupportBot() {
     changeStep("done");
     return true;
   }
-  async function sendChat(text: string) {
+  async function sendChat(text: string, history: { role: "user" | "assistant"; text: string }[]) {
     const key = readStoredApiKey();
     if (!key) return;
     setThinking(true);
@@ -230,10 +235,10 @@ export default function SupportBot() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, apiKey: key, language }),
+        body: JSON.stringify({ message: text, apiKey: key, language, history }),
       });
       const data = await res.json();
-      if (data.answer) pushBot({ text: data.answer, sources: data.sources });
+      if (data.answer) pushBot({ text: data.answer, sources: data.sources, chat: true });
       else if (data.error) pushBot({ text: data.error });
       else pushBot({ textKey: "unableToRespond" });
     } catch {
@@ -247,11 +252,17 @@ export default function SupportBot() {
     if (!text || thinking) return;
     setDraft("");
     if (trySaveKey(text)) return;
-    pushUser({ text });
     if (hasKey) {
-      sendChat(text);
+      // Earlier live Q&A only (no walkthrough lines, no keys); the current message goes separately.
+      const history = messages
+        .filter((m) => m.chat && m.text)
+        .slice(-CHAT_HISTORY_TURNS)
+        .map((m) => ({ role: m.from === "user" ? ("user" as const) : ("assistant" as const), text: m.text as string }));
+      pushUser({ text, chat: true });
+      sendChat(text, history);
       return;
     }
+    pushUser({ text });
     pushBot({ textKey: "fallbackHelp" });
   }
   function copyText(id: string, text: string) {
