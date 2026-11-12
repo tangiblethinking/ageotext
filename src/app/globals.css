@@ -1,1 +1,10 @@
-/* Intentionally empty. All layout and typography come from the source guide CSS. */
+/* All layout and typography come from the source guide CSS.
+   Only reset the default body margin so the sticky nav is flush before that CSS loads. */
+body {
+  margin: 0;
+}
+
+/* Page scroll lock while a design overlay is open (set by NavBar). */
+body.design-overlay-open {
+  overflow: hidden;
+}

@@ -21,7 +21,8 @@ export default function GuideContent() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: css }} />
-      <div dangerouslySetInnerHTML={{ __html: html }} />
+      {/* The guide stays in English regardless of the UI language. */}
+      <div className="guide-root" lang="en" dangerouslySetInnerHTML={{ __html: html }} />
     </>
   );
 }

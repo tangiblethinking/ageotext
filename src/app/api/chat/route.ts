@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { retrieveRelevantChunks } from "@/lib/content";
 
+/** English names for the UI languages, used in the "Respond in …" instruction. */
+const RESPONSE_LANGUAGES: Record<string, string> = {
+  en: "English",
+  es: "Spanish",
+  fr: "French",
+  de: "German",
+  pt: "Portuguese",
+  zh: "Simplified Chinese",
+  ja: "Japanese",
+  ko: "Korean",
+  th: "Thai",
+};
+
 const FREE_TIER_MODELS = [
   "gemini-2.5-flash-lite",
   "gemini-2.5-flash",
@@ -52,7 +65,7 @@ async function tryGenerate(key: string, model: string, prompt: string, system: s
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, apiKey } = await req.json();
+    const { message, apiKey, language } = await req.json();
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message required" }, { status: 400 });
     }
@@ -62,7 +75,13 @@ export async function POST(req: NextRequest) {
 
     const chunks = retrieveRelevantChunks(message, 6);
     const context = chunks.map((c) => `## ${c.heading} (${c.section})\n${c.text}`).join("\n\n");
-    const system = "You are a precise assistant for the AEO/GEO Semantic Architecture Optimization Guide. Answer fully from the provided context. Include all relevant details and examples. Cite the sections used. If the answer is not in the context, say so.";
+    const responseLanguage = (typeof language === "string" && RESPONSE_LANGUAGES[language]) || RESPONSE_LANGUAGES.en;
+    const system =
+      "You are a precise assistant for the AEO/GEO Semantic Architecture Optimization Guide. Answer fully from the provided context. Include all relevant details and examples. Cite the sections used. If the answer is not in the context, say so." +
+      ` Respond in ${responseLanguage}.` +
+      (responseLanguage === "English"
+        ? ""
+        : " The guide context is in English: translate your explanation, but keep code, HTML tags, CSS, and quoted section headings exactly as written in the guide.");
     const prompt = `Context:\n${context}\n\nQuestion: ${message}`;
 
     let lastError = "";

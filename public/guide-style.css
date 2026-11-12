@@ -120,6 +120,12 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
+            padding: 0;
+        }
+
+        /* Page padding lives on the guide wrapper (not <body>) so the sticky
+           NavBar spans the full width and sits flush at the top. */
+        .guide-root {
             padding: 2.5rem 1.25rem;
         }
 
